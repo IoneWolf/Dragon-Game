@@ -48,6 +48,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (DialogueUI.IsOpen) return;
+
         // Visual-only, so it updates every rendered frame instead of only on physics steps.
         float horizontal = input.MoveInput.x;
         if (visual != null && Mathf.Abs(horizontal) > 0.01f)
@@ -56,6 +58,15 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Freeze horizontal movement/jumping while a dialogue is open, but keep gravity acting normally.
+        if (DialogueUI.IsOpen)
+        {
+            Vector2 frozenVelocity = rb.linearVelocity;
+            frozenVelocity.x = 0f;
+            rb.linearVelocity = frozenVelocity;
+            return;
+        }
+
         float horizontal = input.MoveInput.x;
         float speed = moveSpeed * (input.SprintHeld ? sprintMultiplier : 1f);
 

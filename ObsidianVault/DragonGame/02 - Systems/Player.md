@@ -18,6 +18,7 @@ Core movement, on `Rigidbody2D`. Key mechanics:
 - **Coyote time + jump buffering**: `CanJump()` is a pure static function (unit tested) that allows a jump if you're within `coyoteTime` seconds of last being grounded AND within `jumpBufferTime` seconds of pressing jump — this smooths out the classic "jump didn't register" feeling from `Rigidbody2D`/`CharacterController` grounded-flag flakiness.
 - **Ground check**: a small `Physics2D.OverlapCircle` at the feet (optionally at a `groundCheck` child Transform, or auto-computed from the collider bounds if not assigned), explicitly ignoring the player's own collider so it can't falsely detect itself.
 - **Anti-snag**: if grounded and trying to move but not actually advancing (a known Unity 2D issue where a `Rigidbody2D` can catch on the seam between adjacent tile colliders), it nudges the character upward slightly after a short delay to pop free. This is a safety net — the real fix is rounding the collider's `Edge Radius` and merging the Tilemap's colliders with a `Composite Collider 2D` (see [[Grid and Tilemapping]]).
+- **Dialogue pause**: while `DialogueUI.IsOpen` is true, `FixedUpdate` zeroes horizontal velocity and skips jump handling (gravity still applies, so an airborne player still lands), and `Update` skips sprite-facing updates — see [[Dialogue System]].
 
 ### `PlayerHealth.cs`
 - 3 max HP (configurable).
@@ -32,4 +33,4 @@ Core movement, on `Rigidbody2D`. Key mechanics:
 - `SetVisible(bool)` / `IsVisible` — used by `PlayerHealth` for the invulnerability flicker.
 
 ## Scene Setup
-`Player` GameObject has: `Rigidbody2D` (Dynamic, gravity scale ~3, rotation Z frozen, Interpolate ON), `BoxCollider2D`, `PlayerInput` (Actions = `InputSystem_Actions`, Behavior = Send Messages), `PlayerInputHandler`, `PlayerController`, `PlayerSpriteVisual`, `PlayerHealth`. Tag = `Player`, Layer = `Player` (custom layer, used so enemies don't physically collide with the player — see [[Enemy]]).
+`Player` GameObject has: `Rigidbody2D` (Dynamic, gravity scale ~3, rotation Z frozen, Interpolate ON), `BoxCollider2D`, `PlayerInput` (Actions = `InputSystem_Actions`, Behavior = Send Messages), `PlayerInputHandler`, `PlayerController`, `PlayerSpriteVisual`, `PlayerHealth`, `PlayerInteractor` (see [[Interaction System]]). Tag = `Player`, Layer = `Player` (custom layer, used so enemies don't physically collide with the player — see [[Enemy]]).

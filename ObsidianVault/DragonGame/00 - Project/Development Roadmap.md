@@ -8,6 +8,7 @@ Focused on development order, not a full feature wishlist. See [[NEXT]] for the 
 - 2D camera follow — see [[Camera]]
 - HUD: health bar + game-over screen — see [[HUD]]
 - Level ground via Unity Tilemap (Composite Collider, zero-friction physics material) — see [[Grid and Tilemapping]]
+- Interact-to-talk: nearest-interactable detection + a reusable dialogue box, with a talking rock as the first example — see [[Interaction System]] and [[Dialogue System]]
 
 ## In Progress
 - Nothing currently marked in progress — see [[NEXT]] once a task is set.

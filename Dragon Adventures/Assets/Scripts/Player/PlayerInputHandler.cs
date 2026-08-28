@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,7 +12,10 @@ public class PlayerInputHandler : MonoBehaviour
     // Timestamp of the last jump press, used by PlayerController for jump buffering.
     public float LastJumpPressedTime { get; private set; } = -10f;
 
-    // Matching action names in InputSystem_Actions.inputactions: Move, Jump, Sprint.
+    // Fired on Interact press, consumed by PlayerInteractor.
+    public event Action InteractPressed;
+
+    // Matching action names in InputSystem_Actions.inputactions: Move, Jump, Sprint, Interact.
     public void OnMove(InputValue value) => MoveInput = value.Get<Vector2>();
 
     public void OnJump(InputValue value)
@@ -20,6 +24,11 @@ public class PlayerInputHandler : MonoBehaviour
     }
 
     public void OnSprint(InputValue value) => SprintHeld = value.isPressed;
+
+    public void OnInteract(InputValue value)
+    {
+        if (value.isPressed) InteractPressed?.Invoke();
+    }
 
     // Called once a buffered jump has been used so it can't trigger a second jump.
     public void ConsumeJump()

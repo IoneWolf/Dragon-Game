@@ -14,6 +14,8 @@ Obsidian vault for the Dragon Adventures Unity 2D project.
 - [[Camera]]
 - [[Grid and Tilemapping]]
 - [[HUD]]
+- [[Interaction System]]
+- [[Dialogue System]]
 
 ## Other
 - [[Asset Requirements]] — placeholder art still needed
