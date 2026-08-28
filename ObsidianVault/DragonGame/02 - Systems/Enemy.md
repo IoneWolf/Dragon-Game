@@ -29,3 +29,6 @@ The contact/damage logic. Key design point: **the enemy needs to stand solidly o
 
 ## Debugging Aid
 `EnemyPatrol` draws a cyan gizmo (line + wire box) showing exactly where its wall-detection check happens — select the `Enemy` GameObject in the Editor (even during Play mode) to visualize it if patrol behavior looks wrong.
+
+## Known Problems
+- Patrol only reverses on hitting a wall — it doesn't detect ledges/gaps, so an enemy can walk straight off a platform edge. See [[Development Roadmap]].
