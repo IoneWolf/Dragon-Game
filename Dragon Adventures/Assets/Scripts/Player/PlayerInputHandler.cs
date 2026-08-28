@@ -1,0 +1,29 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+// Reads input from a PlayerInput component (Behavior: Send Messages) and exposes it to PlayerController.
+[RequireComponent(typeof(PlayerController))]
+public class PlayerInputHandler : MonoBehaviour
+{
+    public Vector2 MoveInput { get; private set; }
+    public bool SprintHeld { get; private set; }
+
+    // Timestamp of the last jump press, used by PlayerController for jump buffering.
+    public float LastJumpPressedTime { get; private set; } = -10f;
+
+    // Matching action names in InputSystem_Actions.inputactions: Move, Jump, Sprint.
+    public void OnMove(InputValue value) => MoveInput = value.Get<Vector2>();
+
+    public void OnJump(InputValue value)
+    {
+        if (value.isPressed) LastJumpPressedTime = Time.time;
+    }
+
+    public void OnSprint(InputValue value) => SprintHeld = value.isPressed;
+
+    // Called once a buffered jump has been used so it can't trigger a second jump.
+    public void ConsumeJump()
+    {
+        LastJumpPressedTime = -10f;
+    }
+}
