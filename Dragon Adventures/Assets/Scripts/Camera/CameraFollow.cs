@@ -10,6 +10,11 @@ public class CameraFollow : MonoBehaviour
     [Header("Smoothing")]
     public float smoothTime = 0.15f;
 
+    [Header("Vertical Limits")]
+    public bool useVerticalLimits;
+    public float topLimit = 10f;
+    public float bottomLimit = -10f;
+
     private Vector3 velocity;
     private float fixedZ;
 
@@ -22,7 +27,11 @@ public class CameraFollow : MonoBehaviour
     {
         if (target == null) return;
 
-        Vector3 desiredPosition = new Vector3(target.position.x + offset.x, target.position.y + offset.y, fixedZ);
+        float desiredY = target.position.y + offset.y;
+        if (useVerticalLimits)
+            desiredY = Mathf.Clamp(desiredY, bottomLimit, topLimit);
+
+        Vector3 desiredPosition = new Vector3(target.position.x + offset.x, desiredY, fixedZ);
         transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, smoothTime);
     }
 }

@@ -1,4 +1,7 @@
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 // Generates a solid red square sprite (placeholder art) for the enemy.
 [ExecuteAlways]
@@ -18,9 +21,21 @@ public class EnemySpriteVisual : MonoBehaviour
 
     private void OnValidate()
     {
+#if UNITY_EDITOR
+        EditorApplication.delayCall -= DelayedRefresh;
+        EditorApplication.delayCall += DelayedRefresh;
+#endif
+    }
+
+#if UNITY_EDITOR
+    private void DelayedRefresh()
+    {
+        if (this == null) return;
+
         if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
         Refresh();
     }
+#endif
 
     private void Refresh()
     {

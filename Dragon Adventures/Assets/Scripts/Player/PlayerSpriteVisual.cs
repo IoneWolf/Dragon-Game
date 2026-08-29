@@ -1,4 +1,7 @@
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 // Generates a solid-color square sprite (placeholder art) and flips to face movement direction.
 // ExecuteAlways so the sprite is visible in the Scene view even before pressing Play.
@@ -19,9 +22,21 @@ public class PlayerSpriteVisual : MonoBehaviour
 
     private void OnValidate()
     {
+#if UNITY_EDITOR
+        EditorApplication.delayCall -= DelayedRefresh;
+        EditorApplication.delayCall += DelayedRefresh;
+#endif
+    }
+
+#if UNITY_EDITOR
+    private void DelayedRefresh()
+    {
+        if (this == null) return;
+
         if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
         Refresh();
     }
+#endif
 
     private void Refresh()
     {

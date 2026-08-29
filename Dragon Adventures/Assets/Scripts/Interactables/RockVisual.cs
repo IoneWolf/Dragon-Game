@@ -1,4 +1,7 @@
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 // Generates a solid-color half-circle placeholder sprite (a "rock") for the interactable.
 // ExecuteAlways so it's visible in the Scene view without pressing Play, like PlayerSpriteVisual/EnemySpriteVisual.
@@ -21,9 +24,21 @@ public class RockVisual : MonoBehaviour
 
     private void OnValidate()
     {
+#if UNITY_EDITOR
+        EditorApplication.delayCall -= DelayedRefresh;
+        EditorApplication.delayCall += DelayedRefresh;
+#endif
+    }
+
+#if UNITY_EDITOR
+    private void DelayedRefresh()
+    {
+        if (this == null) return;
+
         if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
         Refresh();
     }
+#endif
 
     private void Refresh()
     {
