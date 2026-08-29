@@ -1,6 +1,7 @@
 using UnityEngine;
 
 // Finds the closest IInteractable in range and triggers it when the Interact input fires.
+// Also keeps a "you can interact" prompt shown on whichever interactable is currently closest.
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerInteractor : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class PlayerInteractor : MonoBehaviour
 
     private PlayerInputHandler input;
     private readonly Collider2D[] results = new Collider2D[8];
+    private IInteractionPrompt currentPrompt;
 
     private void Awake()
     {
@@ -16,36 +18,54 @@ public class PlayerInteractor : MonoBehaviour
     }
 
     private void OnEnable() => input.InteractPressed += HandleInteractPressed;
-    private void OnDisable() => input.InteractPressed -= HandleInteractPressed;
+
+    private void OnDisable()
+    {
+        input.InteractPressed -= HandleInteractPressed;
+        SetCurrentPrompt(null);
+    }
+
+    private void Update()
+    {
+        // Hide the prompt while a conversation is open so it doesn't float over the dialogue box.
+        Collider2D closest = DialogueUI.IsOpen ? null : FindClosestInteractableCollider();
+        SetCurrentPrompt(closest != null ? closest.GetComponentInParent<IInteractionPrompt>() : null);
+    }
 
     private void HandleInteractPressed()
     {
         // Don't let Interact also advance/dismiss whatever dialogue is currently open.
         if (DialogueUI.IsOpen) return;
 
-        IInteractable closest = FindClosestInteractable();
-        closest?.Interact();
+        Collider2D closest = FindClosestInteractableCollider();
+        closest?.GetComponentInParent<IInteractable>()?.Interact();
     }
 
-    private IInteractable FindClosestInteractable()
+    private void SetCurrentPrompt(IInteractionPrompt prompt)
+    {
+        if (prompt == currentPrompt) return;
+        currentPrompt?.SetPromptVisible(false);
+        currentPrompt = prompt;
+        currentPrompt?.SetPromptVisible(true);
+    }
+
+    private Collider2D FindClosestInteractableCollider()
     {
         int count = Physics2D.OverlapCircleNonAlloc(transform.position, interactRadius, results, interactableLayerMask);
-        IInteractable closest = null;
+        Collider2D closest = null;
         float closestSqrDistance = float.MaxValue;
 
         for (int i = 0; i < count; i++)
         {
             Collider2D hit = results[i];
             if (hit == null) continue;
-
-            IInteractable interactable = hit.GetComponentInParent<IInteractable>();
-            if (interactable == null) continue;
+            if (hit.GetComponentInParent<IInteractable>() == null) continue;
 
             float sqrDistance = ((Vector2)hit.transform.position - (Vector2)transform.position).sqrMagnitude;
             if (sqrDistance < closestSqrDistance)
             {
                 closestSqrDistance = sqrDistance;
-                closest = interactable;
+                closest = hit;
             }
         }
         return closest;

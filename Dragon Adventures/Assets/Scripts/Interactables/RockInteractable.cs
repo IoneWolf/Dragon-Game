@@ -3,6 +3,7 @@ using UnityEngine;
 // A talking rock: interacting asks the player to pick it up, and reacts if they actually do.
 // Placeholder half-circle sprite (see RockVisual) - swap in real art whenever it's ready.
 [RequireComponent(typeof(RockVisual))]
+[RequireComponent(typeof(InteractionPromptIcon))]
 public class RockInteractable : MonoBehaviour, IInteractable
 {
     private RockVisual visual;

@@ -12,8 +12,8 @@
 /Dragon Adventures/[Mm]emoryCaptures/
 /Dragon Adventures/[Rr]ecordings/
 
-# Asset meta data should only be ignored when the corresponding asset is also ignored
-!/Dragon Adventures/[Aa]ssets/**/*.meta
+# Ignore Unity meta files
+*.meta
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /Dragon Adventures/[Aa]ssets/AssetStoreTools*
