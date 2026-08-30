@@ -29,11 +29,22 @@ public class PlayerController : MonoBehaviour
     public float snagTimeThreshold = 0.1f;
     public float snagNudgeAmount = 0.05f;
 
+    [Header("Fall Respawn")]
+    public bool useFallRespawn = true;
+    [Tooltip("If the player's Y position drops below this value, they respawn at the last grounded position.")]
+    public float fallRespawnY = -10f;
+    [Tooltip("Sideways offset applied when respawning from the last grounded position.")]
+    public float respawnXOffset = 1f;
+    [Tooltip("Small upward offset applied when respawning so the player does not reappear slightly inside the ground.")]
+    public float respawnYOffset = 0.25f;
+
     private Rigidbody2D rb;
     private Collider2D ownCollider;
     private PlayerInputHandler input;
     private PlayerSpriteVisual visual;
     private float lastGroundedTime = -10f;
+    private Vector2 lastGroundedPosition;
+    private float lastMoveDirection = 1f;
     private float snagTimer;
     private float lastPositionX;
     private readonly Collider2D[] groundCheckResults = new Collider2D[8];
@@ -44,6 +55,7 @@ public class PlayerController : MonoBehaviour
         ownCollider = GetComponent<Collider2D>();
         input = GetComponent<PlayerInputHandler>();
         visual = GetComponentInChildren<PlayerSpriteVisual>();
+        lastGroundedPosition = rb.position;
     }
 
     private void Update()
@@ -58,6 +70,12 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (useFallRespawn && rb.position.y < fallRespawnY)
+        {
+            RespawnAtLastGroundedPosition();
+            return;
+        }
+
         // Freeze horizontal movement/jumping while a dialogue is open, but keep gravity acting normally.
         if (DialogueUI.IsOpen)
         {
@@ -69,9 +87,14 @@ public class PlayerController : MonoBehaviour
 
         float horizontal = input.MoveInput.x;
         float speed = moveSpeed * (input.SprintHeld ? sprintMultiplier : 1f);
+        if (Mathf.Abs(horizontal) > 0.1f)
+            lastMoveDirection = Mathf.Sign(horizontal);
 
         if (IsGrounded())
+        {
             lastGroundedTime = Time.time;
+            lastGroundedPosition = rb.position;
+        }
 
         Vector2 velocity = rb.linearVelocity;
 
@@ -87,6 +110,16 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = velocity;
 
         HandleSnag(horizontal);
+    }
+
+    private void RespawnAtLastGroundedPosition()
+    {
+        Vector2 respawnPosition = lastGroundedPosition + new Vector2(-lastMoveDirection * respawnXOffset, respawnYOffset);
+        rb.position = respawnPosition;
+        rb.linearVelocity = Vector2.zero;
+        lastGroundedTime = Time.time;
+        lastPositionX = respawnPosition.x;
+        snagTimer = 0f;
     }
 
     // Rarely, a Rigidbody2D can catch on a seam vertex between adjacent tile colliders even with

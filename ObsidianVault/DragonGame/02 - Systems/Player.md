@@ -19,6 +19,7 @@ Core movement, on `Rigidbody2D`. Key mechanics:
 - **Ground check**: a small `Physics2D.OverlapCircle` at the feet (optionally at a `groundCheck` child Transform, or auto-computed from the collider bounds if not assigned), explicitly ignoring the player's own collider so it can't falsely detect itself.
 - **Anti-snag**: if grounded and trying to move but not actually advancing (a known Unity 2D issue where a `Rigidbody2D` can catch on the seam between adjacent tile colliders), it nudges the character upward slightly after a short delay to pop free. This is a safety net — the real fix is rounding the collider's `Edge Radius` and merging the Tilemap's colliders with a `Composite Collider 2D` (see [[Grid and Tilemapping]]).
 - **Dialogue pause**: while `DialogueUI.IsOpen` is true, `FixedUpdate` zeroes horizontal velocity and skips jump handling (gravity still applies, so an airborne player still lands), and `Update` skips sprite-facing updates — see [[Dialogue System]].
+- **Fall respawn**: tracks the player's last grounded physics position. If `useFallRespawn` is enabled and the player's Y position drops below `fallRespawnY`, the player is moved back to the last grounded position, offset upward by `respawnYOffset` and sideways opposite their last movement direction by `respawnXOffset`. Velocity is cleared, and movement resumes from there.
 
 ### `PlayerHealth.cs`
 - 3 max HP (configurable).
@@ -34,3 +35,5 @@ Core movement, on `Rigidbody2D`. Key mechanics:
 
 ## Scene Setup
 `Player` GameObject has: `Rigidbody2D` (Dynamic, gravity scale ~3, rotation Z frozen, Interpolate ON), `BoxCollider2D`, `PlayerInput` (Actions = `InputSystem_Actions`, Behavior = Send Messages), `PlayerInputHandler`, `PlayerController`, `PlayerSpriteVisual`, `PlayerHealth`, `PlayerInteractor` (see [[Interaction System]]). Tag = `Player`, Layer = `Player` (custom layer, used so enemies don't physically collide with the player — see [[Enemy]]).
+
+For pits/falling off the map, tune `PlayerController.fallRespawnY` in the Inspector. Set it below the playable level floor; when the player drops past that Y value, they respawn at the last grounded spot, offset away from their last movement direction by `respawnXOffset` and upward by `respawnYOffset`.

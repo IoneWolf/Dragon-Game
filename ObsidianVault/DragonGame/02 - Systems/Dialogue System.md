@@ -7,6 +7,9 @@ A simple runtime-built dialogue box: a speaker sprite, a line of text, and optio
 ### `DialogueChoice.cs`
 A tiny data class: `Text` (button label) + `OnChosen` (an `Action` run when the player clicks it).
 
+### `NPCDialogueData.cs`
+A `ScriptableObject` asset used by NPCs so dialogue content can be edited separately from interaction logic. Create one via **Assets -> Create -> Dragon Adventure -> Dialogue -> NPC Dialogue**.
+
 ### `DialogueUI.cs`
 - Static API: `DialogueUI.Show(sprite, text, choices)` and `DialogueUI.Hide()`. `DialogueUI.IsOpen` reports whether the panel is currently visible.
 - Lazily creates its own hidden singleton `GameObject` the first time `Show` is called — callers never need to place it in the scene.
@@ -17,6 +20,7 @@ A tiny data class: `Text` (button label) + `OnChosen` (an `Action` run when the 
 ## Dependencies
 - [[Player]] — `PlayerController` checks `DialogueUI.IsOpen` in `FixedUpdate`/`Update` to freeze horizontal movement, jumping, and sprite-facing updates while a conversation is open (gravity keeps acting normally, so an airborne player still lands).
 - [[Interaction System]] — interactables are the callers of `DialogueUI.Show`.
+- [[NPC]] — NPCs use `NPCDialogueData` assets and display them through `DialogueUI`.
 
 ## Status
 Working.

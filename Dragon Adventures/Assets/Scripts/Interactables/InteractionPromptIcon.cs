@@ -10,6 +10,7 @@ public class InteractionPromptIcon : MonoBehaviour, IInteractionPrompt
     public int fontSize = 24;
 
     private GameObject promptObject;
+    private TextMesh promptTextMesh;
 
     private void Awake()
     {
@@ -25,14 +26,14 @@ public class InteractionPromptIcon : MonoBehaviour, IInteractionPrompt
 
         Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
-        TextMesh textMesh = promptObject.GetComponent<TextMesh>();
-        textMesh.text = promptText;
-        textMesh.characterSize = 0.1f;
-        textMesh.fontSize = fontSize;
-        textMesh.anchor = TextAnchor.MiddleCenter;
-        textMesh.alignment = TextAlignment.Center;
-        textMesh.color = textColor;
-        textMesh.font = font;
+        promptTextMesh = promptObject.GetComponent<TextMesh>();
+        promptTextMesh.text = promptText;
+        promptTextMesh.characterSize = 0.1f;
+        promptTextMesh.fontSize = fontSize;
+        promptTextMesh.anchor = TextAnchor.MiddleCenter;
+        promptTextMesh.alignment = TextAlignment.Center;
+        promptTextMesh.color = textColor;
+        promptTextMesh.font = font;
 
         MeshRenderer meshRenderer = promptObject.GetComponent<MeshRenderer>();
         meshRenderer.sharedMaterial = font.material;
@@ -42,5 +43,11 @@ public class InteractionPromptIcon : MonoBehaviour, IInteractionPrompt
     public void SetPromptVisible(bool visible)
     {
         if (promptObject != null) promptObject.SetActive(visible);
+    }
+
+    public void SetPromptText(string text)
+    {
+        promptText = text;
+        if (promptTextMesh != null) promptTextMesh.text = promptText;
     }
 }

@@ -22,13 +22,21 @@ A single-method interface: `void Interact()`. Any `MonoBehaviour` that implement
 - `RockVisual` (`[ExecuteAlways]`) generates a black half-circle placeholder sprite via `HalfCircleSpriteFactory` (`Assets/Scripts/Common/`), visible in the Scene view without pressing Play.
 - `RockInteractable` auto-adds a trigger `CircleCollider2D` in `Awake()` if one isn't already present (no manual collider setup needed), and drives the dialogue — see [[Dialogue System]] for the actual conversation.
 
+## Example Interactable: NPC
+`NPCVisual.cs` + `NPCInteractable.cs` (`Assets/Scripts/NPC/`) — a yellow square placeholder NPC that uses `NPCDialogueData` assets for editable dialogue content. See [[NPC]].
+
+## Example Interactable: Level Exit
+`LevelExit.cs` (`Assets/Scripts/Level/`) — an interactable area/door/edge trigger that loads another scene and requests a matching `LevelSpawnPoint`. See [[Level Transitions]].
+
 ## Scene Setup
 - `Player` GameObject needs a `PlayerInteractor` component added (alongside the components listed in [[Player]]).
 - Any interactable object needs a `Collider2D` (auto-added by `RockInteractable` if missing) and a component implementing `IInteractable`.
+- NPC objects should also have `InteractionPromptIcon` so the player sees the existing "Press E" prompt while in range.
 
 ## Dependencies
 - [[Dialogue System]] — interactables commonly use it to show their response.
 - [[Player]] — `PlayerInteractor` requires `PlayerInputHandler`.
+- [[Level Transitions]] — exits use the same interactable path to move between areas.
 
 ## Status
 Working.

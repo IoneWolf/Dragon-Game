@@ -174,6 +174,10 @@ MonoBehaviour:
     m_Bits: 4294967295
   snagTimeThreshold: 0.1
   snagNudgeAmount: 0.05
+  useFallRespawn: 1
+  fallRespawnY: -10
+  respawnXOffset: 1
+  respawnYOffset: 0.25
 --- !u!114 &4244871740092522567
 MonoBehaviour:
   m_ObjectHideFlags: 0

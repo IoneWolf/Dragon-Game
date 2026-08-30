@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd019bac08b504e4783a92f775f30270, type: 3}
+  m_Name: Friendly NPC Dialogue
+  m_EditorClassIdentifier: 
+  speakerSprite: {fileID: 0}
+  openingLine: Hey there. Nice day for an adventure.
+  options:
+  - choiceText: Who are you?
+    responseText: I am a friendly placeholder NPC. Once the world has more story, you can rewrite me in this dialogue asset.
+    closesDialogue: 0
+  - choiceText: Any advice?
+    responseText: Keep exploring, test every jump, and talk to anything that looks suspiciously square.
+    closesDialogue: 0
+  - choiceText: Goodbye.
+    responseText: 
+    closesDialogue: 1
