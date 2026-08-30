@@ -22,7 +22,7 @@ A simple fixed-plane 2D follow camera:
 ## Scene Setup
 Attached to `Main Camera`. Camera itself is typically Orthographic for a clean 2D look, positioned at some negative Z (e.g. `-10`) so it looks toward the play plane at `Z = 0`.
 
-Keep the camera scene-owned rather than making it a Player-prefab child. Each scene should contain one active `Main Camera` and one `AudioListener`; `GameController` reconnects that camera to the persistent Player when entering from another level.
+Keep the camera scene-owned rather than making it a Player-prefab child. Content-scene cameras start disabled and `GameController` enables only the destination camera after it reconnects to the persistent Player. The only active `AudioListener` lives in `Persistent.unity` with the music service.
 
 ## Known Issue (resolved)
 Early on, the scene accidentally ended up with **two** `Main Camera` GameObjects (one properly tagged `MainCamera`, one untagged with `CameraFollow` attached and stale serialized field values from an earlier version of the script). This caused the camera to appear off-center/not tracking correctly. If camera behavior ever seems to desync from what the script logic implies, check the Hierarchy for duplicate `Main Camera` objects first.

@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 // Builds a simple title/Play/Quit main menu entirely in code, same approach as HealthBarUI/GameOverUI.
@@ -98,7 +97,14 @@ public class MainMenuUI : MonoBehaviour
 
     public void PlayGame()
     {
-        SceneManager.LoadScene(gameplaySceneName);
+        GameController controller = GameController.Instance;
+        if (controller == null)
+        {
+            Debug.LogWarning("Main Menu needs a persistent GameController to start the game.");
+            return;
+        }
+
+        controller.StartGame();
     }
 
     public void QuitGame()

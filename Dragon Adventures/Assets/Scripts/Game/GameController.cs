@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
     private const float TransitionCameraSnapDuration = 0.05f;
+    private const string MainMenuScenePath = "Assets/Scenes/MainMenu.unity";
 
     private static GameController instance;
 
@@ -35,6 +36,7 @@ public class GameController : MonoBehaviour
     private string pendingScenePath;
     private bool transitionInProgress;
     private PlayerController persistentPlayer;
+    private Scene currentContentScene;
 
     private void Awake()
     {
@@ -46,13 +48,7 @@ public class GameController : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject);
-        SceneManager.sceneLoaded += HandleSceneLoaded;
-    }
-
-    private void OnDestroy()
-    {
-        if (instance == this)
-            SceneManager.sceneLoaded -= HandleSceneLoaded;
+        StartCoroutine(LoadInitialContentRoutine());
     }
 
     public void AddScore(int amount)
@@ -63,6 +59,20 @@ public class GameController : MonoBehaviour
     public void ResetScore()
     {
         score = 0;
+    }
+
+    public void StartGame()
+    {
+        LoadSceneByPath(levelScenePaths[0], null, false);
+    }
+
+    public bool RestartCurrentLevel()
+    {
+        if (transitionInProgress || !currentContentScene.IsValid() || !currentContentScene.isLoaded)
+            return false;
+
+        StartCoroutine(RestartCurrentLevelRoutine(currentContentScene.path));
+        return true;
     }
 
     public bool LoadLevelByOffset(int levelOffset, string spawnId, bool keepPlayerBetweenScenes)
@@ -167,10 +177,14 @@ public class GameController : MonoBehaviour
         pendingSpawnId = spawnId;
         pendingScenePath = scenePath;
 
+        Scene previousContentScene = currentContentScene;
         if (keepPlayerBetweenScenes)
             KeepPlayerBetweenScenes();
 
-        AsyncOperation loadOperation = SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Single);
+        if (previousContentScene.IsValid() && previousContentScene.isLoaded)
+            SetSceneCamerasEnabled(previousContentScene, false);
+
+        AsyncOperation loadOperation = SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Additive);
         if (loadOperation == null)
         {
             transitionInProgress = false;
@@ -182,14 +196,65 @@ public class GameController : MonoBehaviour
 
         Scene loadedScene = SceneManager.GetSceneByPath(scenePath);
         if (loadedScene.IsValid())
+        {
             SceneManager.SetActiveScene(loadedScene);
+            currentContentScene = loadedScene;
+        }
+
+        if (HasPendingSpawn)
+            PlacePlayerAtPendingSpawn(loadedScene);
+        else
+            BindHudToPlayer(FindFirstObjectByType<PlayerController>());
+
+        SetSceneCamerasEnabled(loadedScene, true);
+
+        if (previousContentScene.IsValid() && previousContentScene.isLoaded && previousContentScene != loadedScene)
+        {
+            AsyncOperation unloadOperation = SceneManager.UnloadSceneAsync(previousContentScene);
+            if (unloadOperation != null)
+            {
+                while (!unloadOperation.isDone)
+                    yield return null;
+            }
+        }
 
         transitionInProgress = false;
     }
 
-    private void HandleSceneLoaded(Scene loadedScene, LoadSceneMode loadMode)
+    private IEnumerator LoadInitialContentRoutine()
     {
-        if (!HasPendingSpawn || loadedScene.path != pendingScenePath)
+        yield return null;
+        LoadSceneByPath(MainMenuScenePath, null, false);
+    }
+
+    private IEnumerator RestartCurrentLevelRoutine(string scenePath)
+    {
+        transitionInProgress = true;
+        ClearPendingSpawn();
+
+        if (persistentPlayer != null)
+        {
+            Destroy(persistentPlayer.gameObject);
+            persistentPlayer = null;
+            yield return null;
+        }
+
+        SetSceneCamerasEnabled(currentContentScene, false);
+        AsyncOperation unloadOperation = SceneManager.UnloadSceneAsync(currentContentScene);
+        if (unloadOperation != null)
+        {
+            while (!unloadOperation.isDone)
+                yield return null;
+        }
+
+        currentContentScene = default;
+        transitionInProgress = false;
+        LoadSceneByPath(scenePath, null, false);
+    }
+
+    private void PlacePlayerAtPendingSpawn(Scene loadedScene)
+    {
+        if (loadedScene.path != pendingScenePath)
             return;
 
         LevelSpawnPoint[] spawnPoints = FindObjectsByType<LevelSpawnPoint>(FindObjectsSortMode.None);
@@ -200,11 +265,14 @@ public class GameController : MonoBehaviour
 
             PlacePlayerAtSpawn(spawnPoint, loadedScene);
             ClearPendingSpawn();
-            return;
+            break;
         }
 
-        Debug.LogWarning($"Scene '{loadedScene.path}' has no {nameof(LevelSpawnPoint)} with spawn ID '{pendingSpawnId}'.");
-        ClearPendingSpawn();
+        if (HasPendingSpawn)
+        {
+            Debug.LogWarning($"Scene '{loadedScene.path}' has no {nameof(LevelSpawnPoint)} with spawn ID '{pendingSpawnId}'.");
+            ClearPendingSpawn();
+        }
     }
 
     private void PlacePlayerAtSpawn(LevelSpawnPoint spawnPoint, Scene loadedScene)
@@ -234,6 +302,22 @@ public class GameController : MonoBehaviour
 
         if (spawnPoint.connectMainCameraToPlayer)
             ConnectSceneCameraToPlayer(loadedScene, player.transform, spawnPoint.cameraOffset);
+
+        BindHudToPlayer(player);
+    }
+
+    private void BindHudToPlayer(PlayerController player)
+    {
+        if (player == null) return;
+
+        PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+        if (playerHealth == null) return;
+
+        foreach (HealthBarUI healthBar in FindObjectsByType<HealthBarUI>(FindObjectsSortMode.None))
+            healthBar.SetTarget(playerHealth);
+
+        foreach (GameOverUI gameOver in FindObjectsByType<GameOverUI>(FindObjectsSortMode.None))
+            gameOver.SetTarget(playerHealth);
     }
 
     private void ConnectSceneCameraToPlayer(Scene scene, Transform playerTransform, Vector2 cameraOffset)
@@ -253,6 +337,15 @@ public class GameController : MonoBehaviour
             cameraFollow.SnapToTarget();
             cameraFollow.DisableSmoothingFor(TransitionCameraSnapDuration);
             return;
+        }
+    }
+
+    private void SetSceneCamerasEnabled(Scene scene, bool enabled)
+    {
+        foreach (GameObject rootObject in scene.GetRootGameObjects())
+        {
+            foreach (Camera sceneCamera in rootObject.GetComponentsInChildren<Camera>(true))
+                sceneCamera.enabled = enabled;
         }
     }
 

@@ -13,6 +13,7 @@ public class PlayerSpriteVisual : MonoBehaviour
     public float size = 1f;
 
     private SpriteRenderer spriteRenderer;
+    private bool isCrouching;
 
     private void OnEnable()
     {
@@ -42,13 +43,21 @@ public class PlayerSpriteVisual : MonoBehaviour
     {
         if (spriteRenderer.sprite == null)
             spriteRenderer.sprite = SquareSpriteFactory.CreateSquareSprite(spriteColor);
-        transform.localScale = Vector3.one * size;
+        transform.localScale = new Vector3(size, isCrouching ? size * 0.5f : size, size);
     }
 
     // Called by PlayerController with the horizontal input axis.
     public void SetFacing(float horizontal)
     {
         spriteRenderer.flipX = horizontal < 0f;
+    }
+
+    public void SetCrouching(bool crouching)
+    {
+        if (isCrouching == crouching) return;
+
+        isCrouching = crouching;
+        Refresh();
     }
 
     // Used by PlayerHealth to flicker the sprite while invulnerable.

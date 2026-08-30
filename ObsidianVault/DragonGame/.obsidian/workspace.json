@@ -4,21 +4,37 @@
     "type": "split",
     "children": [
       {
-        "id": "c1d9a50fd0b214ca",
+        "id": "f94698c89d47620c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cea622d3b0ba4439",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "02 - Systems/Hazards.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Hazards"
+            }
+          }
+        ]
+      },
+      {
+        "id": "567bf0565d4b24c5",
         "type": "tabs",
         "children": [
           {
             "id": "b42fdd2581a40468",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "02 - Systems/Dialogue System.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Dialogue System"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
             }
           }
         ]
@@ -83,7 +99,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 223.5
   },
   "right": {
     "id": "ba4749963cf2fe71",
@@ -188,19 +204,28 @@
       "bases:Create new base": false
     }
   },
-  "active": "b42fdd2581a40468",
+  "active": "cea622d3b0ba4439",
   "lastOpenFiles": [
-    "02 - Systems/Game Controller.md",
-    "02 - Systems/Camera.md",
-    "01 - Development Log/2026-08-29.md",
-    "02 - Systems/Level Transitions.md",
-    "01 - Development Log/2026-08-28.md",
+    "01 - Development Log/2026-08-30.md",
     "01 - Development Log/README.md",
+    "README.md",
+    "02 - Systems/Hazards.md",
+    "01 - Development Log/2026-08-29.md",
+    "01 - Development Log/2026-08-28.md",
+    "02 - Systems/Player.md",
+    "02 - Systems/Objectives.md",
+    "02 - Systems/Dialogue System.md",
+    "02 - Systems/Camera.md",
+    "09 - Assets/Asset Requirements.md",
+    "02 - Systems/Level Transitions.md",
+    "00 - Project/Game Overview.md",
+    "00 - Project/Ideas.md",
+    "00 - Project/NEXT.md",
+    "99 - Archive/TileGrid (Legacy System).md",
+    "02 - Systems/Game Controller.md",
     "00 - Project/Development Roadmap.md",
     "02 - Systems/Enemy.md",
-    "99 - Archive/TileGrid (Legacy System).md",
     "HUD.md",
-    "README.md",
     "Enemy.md",
     "Grid and Tilemapping.md",
     "Camera.md",

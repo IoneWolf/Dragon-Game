@@ -31,6 +31,22 @@ public class HealthBarUI : MonoBehaviour
         if (target != null) HandleHealthChanged(target.CurrentHP, target.maxHP);
     }
 
+    public void SetTarget(PlayerHealth newTarget)
+    {
+        if (target == newTarget) return;
+
+        if (target != null)
+            target.OnHealthChanged -= HandleHealthChanged;
+
+        target = newTarget;
+
+        if (isActiveAndEnabled && target != null)
+        {
+            target.OnHealthChanged += HandleHealthChanged;
+            HandleHealthChanged(target.CurrentHP, target.maxHP);
+        }
+    }
+
     private void BuildUI()
     {
         Canvas canvas = FindFirstObjectByType<Canvas>();

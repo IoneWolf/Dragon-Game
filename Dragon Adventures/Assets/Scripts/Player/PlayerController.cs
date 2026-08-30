@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 // 2D-plane movement using Rigidbody2D, compatible with Tilemap/TilemapCollider2D (2D physics).
 [RequireComponent(typeof(Rigidbody2D))]
@@ -7,7 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed = 5f;
-    public float sprintMultiplier = 1.6f;
+    public float sprintMultiplier = 2f;
 
     [Header("Jumping")]
     public float jumpHeight = 1.5f;
@@ -60,6 +61,21 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (Keyboard.current != null &&
+            (Keyboard.current.leftShiftKey.wasReleasedThisFrame || Keyboard.current.rightShiftKey.wasReleasedThisFrame))
+        {
+            input.ReleaseSprint();
+        }
+
+        if (Keyboard.current != null &&
+            (Keyboard.current.leftCtrlKey.wasReleasedThisFrame || Keyboard.current.rightCtrlKey.wasReleasedThisFrame))
+        {
+            input.ReleaseCrouch();
+        }
+
+        if (visual != null)
+            visual.SetCrouching(input.CrouchHeld);
+
         if (DialogueUI.IsOpen) return;
 
         // Visual-only, so it updates every rendered frame instead of only on physics steps.
@@ -112,7 +128,7 @@ public class PlayerController : MonoBehaviour
         HandleSnag(horizontal);
     }
 
-    private void RespawnAtLastGroundedPosition()
+    public void RespawnAtLastGroundedPosition()
     {
         Vector2 respawnPosition = lastGroundedPosition + new Vector2(-lastMoveDirection * respawnXOffset, respawnYOffset);
         rb.position = respawnPosition;

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 // Generic talking NPC. Dialogue content lives in an optional NPCDialogueData asset.
@@ -7,6 +8,8 @@ using UnityEngine;
 public class NPCInteractable : MonoBehaviour, IInteractable
 {
     public NPCDialogueData dialogueData;
+
+    public event Action OnInteracted;
 
     private NPCVisual visual;
 
@@ -32,6 +35,7 @@ public class NPCInteractable : MonoBehaviour, IInteractable
 
     public void Interact()
     {
+        OnInteracted?.Invoke();
         ShowOpeningLine();
     }
 

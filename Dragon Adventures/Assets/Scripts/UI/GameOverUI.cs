@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 // Shows a "GAME OVER" overlay with a Restart button when the player's HP reaches 0.
@@ -26,6 +25,19 @@ public class GameOverUI : MonoBehaviour
     private void OnDisable()
     {
         if (target != null) target.OnPlayerDefeated -= HandleDefeated;
+    }
+
+    public void SetTarget(PlayerHealth newTarget)
+    {
+        if (target == newTarget) return;
+
+        if (target != null)
+            target.OnPlayerDefeated -= HandleDefeated;
+
+        target = newTarget;
+
+        if (isActiveAndEnabled && target != null)
+            target.OnPlayerDefeated += HandleDefeated;
     }
 
     private void BuildUI()
@@ -121,6 +133,11 @@ public class GameOverUI : MonoBehaviour
     private void Restart()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        GameController controller = GameController.Instance;
+        if (controller == null || !controller.RestartCurrentLevel())
+            return;
+
+        panel.SetActive(false);
     }
 }

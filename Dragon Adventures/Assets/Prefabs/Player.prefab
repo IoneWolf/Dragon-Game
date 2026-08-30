@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  sprintMultiplier: 1.6
+  sprintMultiplier: 2
   jumpHeight: 5
   coyoteTime: 0.15
   jumpBufferTime: 0.15

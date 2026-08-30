@@ -8,7 +8,7 @@ The current ordered route is:
 
 `Level 1 -> Level 2 -> Level 3`
 
-The `levelScenePaths` list on every scene's `GameController` must use that exact order. Every level must also be enabled in **File -> Build Profiles / Build Settings**.
+The `levelScenePaths` list on the `GameController` in `Persistent.unity` must use that exact order. Every level must also be enabled in **File -> Build Profiles / Build Settings**.
 
 ## Spawn Point Rule
 
@@ -49,19 +49,20 @@ For a new Level 4, add it after Level 3 in `levelScenePaths` and Build Settings.
 ### `GameController.cs` (`Assets/Scripts/Game/`)
 
 - Stores the pending scene path and spawn ID.
-- Uses `SceneManager.LoadSceneAsync` with `LoadSceneMode.Single`, so the prior level, camera, and audio listener are unloaded before the destination becomes active.
+- Uses `SceneManager.LoadSceneAsync` with `LoadSceneMode.Additive`, then unloads the previous content scene after the destination is ready.
 - Keeps the traveling Player using `DontDestroyOnLoad`.
 - Removes any Player instantiated by the destination scene, then moves the retained player to the matched spawn and clears its velocity.
-- Handles placement from Unity's `sceneLoaded` event. A missing spawn ID produces a warning instead of silently using the Player prefab position.
+- A missing spawn ID produces a warning instead of silently using the Player prefab position.
 
 ## Level Authoring Checklist
 
 1. Add the scene to Build Settings.
-2. Add its full path to every existing `GameController.levelScenePaths` list in travel order.
-3. Add one `Main Camera` with one `AudioListener`.
-4. Drag in `LevelSpawnPoint.prefab` for each possible entrance and assign unique direction-appropriate IDs.
-5. Add `LevelExit` instances for each possible departure and configure their mode and destination spawn ID.
-6. Test forward and reverse travel in Play Mode. Confirm the player arrives at the marker, only one Player exists, and the Console has no missing-spawn or audio-listener warnings.
+2. Add its full path to `Persistent`'s `GameController.levelScenePaths` list in travel order.
+3. Add one scene-owned `Main Camera`, with no active `AudioListener`.
+4. Do not add HUD, music, or `GameController` objects to the level; `Persistent.unity` owns those systems.
+5. Drag in `LevelSpawnPoint.prefab` for each possible entrance and assign unique direction-appropriate IDs.
+6. Add `LevelExit` instances for each possible departure and configure their mode and destination spawn ID.
+7. Test forward and reverse travel by starting from Persistent. Confirm the player arrives at the marker, the health HUD remains visible, only one Player and one active camera exist, music continues, and the Console has no missing-spawn or audio-listener warnings.
 
 ## Current Limits
 

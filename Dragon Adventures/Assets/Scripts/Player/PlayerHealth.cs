@@ -31,9 +31,9 @@ public class PlayerHealth : MonoBehaviour
         OnHealthChanged?.Invoke(CurrentHP, maxHP);
     }
 
-    public void TakeDamage(int amount)
+    public bool TakeDamage(int amount)
     {
-        if (IsInvulnerable || CurrentHP <= 0 || amount <= 0) return;
+        if (IsInvulnerable || CurrentHP <= 0 || amount <= 0) return false;
 
         CurrentHP = Mathf.Max(0, CurrentHP - amount);
         Debug.Log($"[PlayerHealth] I got hit! HP: {CurrentHP}/{maxHP}");
@@ -49,6 +49,8 @@ public class PlayerHealth : MonoBehaviour
             Debug.Log("[PlayerHealth] Player defeated.");
             OnPlayerDefeated?.Invoke();
         }
+
+        return true;
     }
 
     private IEnumerator InvulnerabilityRoutine()
