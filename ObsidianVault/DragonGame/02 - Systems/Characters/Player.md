@@ -22,7 +22,9 @@ Core movement, on `Rigidbody2D`. Key mechanics:
 - **Dialogue pause**: while `DialogueUI.IsOpen` is true, `FixedUpdate` zeroes horizontal velocity and skips jump handling (gravity still applies, so an airborne player still lands), and `Update` skips sprite-facing updates — see [[Dialogue System]].
 - **Sprint**: hold left or right Shift to set horizontal speed to exactly `moveSpeed * 2`. Releasing Shift clears sprint state and restores base speed.
 - **Crouch**: hold left or right Ctrl to halve the visual's height while keeping its bottom edge at the player's feet. Releasing Ctrl restores the initial full height. This is visual-only; the physics collider remains unchanged, so crouching does not yet allow travel under low ceilings.
+- **One-way platform drop-through**: while standing on a `OneWayPlatform` layer surface, press Ctrl or double-tap `S` to briefly ignore the contacted platform collider and fall to the ground below. See [[Grid and Tilemapping]].
 - **Fall respawn**: tracks the player's last grounded physics position. If `useFallRespawn` is enabled and the player's Y position drops below `fallRespawnY`, the player is moved back to the last grounded position, offset upward by `respawnYOffset` and sideways opposite their last movement direction by `respawnXOffset`. Velocity is cleared, and movement resumes from there.
+- **Game-over restart**: keeps the existing player object, restores full health, and places it at the nearest `LevelSpawnPoint` in the active scene. Every gameplay scene therefore needs at least one spawn point.
 - **Hazard respawn**: `SpikeTrap` uses the same safe grounded position after a surviving hit. See [[Hazards]].
 
 ### `PlayerHealth.cs`
@@ -33,13 +35,20 @@ Core movement, on `Rigidbody2D`. Key mechanics:
 - Returns whether damage was applied. Hazards use this to avoid moving the player again during the invulnerability window.
 
 ### `PlayerSpriteVisual.cs`
-- Procedurally generates a solid-color square sprite (default blue) using the shared `SquareSpriteFactory`, so no actual art asset is required yet.
-- `[ExecuteAlways]` so the sprite is visible in the Scene view even outside Play mode.
+- Loads `DragonIdle1.png` and `DragonIdle2.png` from `Assets/Resources/Sprites/` and loops the two idle frames during Play Mode.
+- The dragon frames are imported as single sprites at 32 pixels per unit with point filtering; use **Tools -> Dragon Adventure -> Configure Dragon Idle Sprites** if the images are reimported with different settings.
+- `[ExecuteAlways]` so the first idle frame is visible in the Scene view even outside Play mode.
 - `SetFacing(horizontal)` flips the sprite (`flipX`) based on movement direction.
 - `SetVisible(bool)` / `IsVisible` — used by `PlayerHealth` for the invulnerability flicker.
 - `SetCrouching(bool)` — applies the held-Ctrl visual height change.
 
 ## Scene Setup
 `Player` GameObject has: `Rigidbody2D` (Dynamic, gravity scale ~3, rotation Z frozen, Interpolate ON), `BoxCollider2D`, `PlayerInput` (Actions = `InputSystem_Actions`, Behavior = Send Messages), `PlayerInputHandler`, `PlayerController`, `PlayerHealth`, `PlayerInteractor` (see [[Interaction System]]), and a `Visual` child containing the `SpriteRenderer` and `PlayerSpriteVisual`. Tag = `Player`, Layer = `Player` (custom layer, used so enemies don't physically collide with the player — see [[Enemy]]).
+
+The player visual uses the `Characters` sorting layer, which renders above the world's `Default` sorting layer so tiles cannot obscure the player.
+
+## Initial Spawn
+
+`Persistent` owns global systems but does not contain a Player. Each first-entry gameplay scene must contain a scene-owned `Player` prefab instance. The current `PlayersHouse` entry scene places its Player at the `LevelSpawnPoint` location; later scene transitions retain that Player with `DontDestroyOnLoad` and move it to their destination spawn point.
 
 For pits/falling off the map, tune `PlayerController.fallRespawnY` in the Inspector. Set it below the playable level floor; when the player drops past that Y value, they respawn at the last grounded spot, offset away from their last movement direction by `respawnXOffset` and upward by `respawnYOffset`.

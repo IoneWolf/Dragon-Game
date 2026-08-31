@@ -26,7 +26,7 @@ public class GameController : MonoBehaviour
 
     [Header("Scene Loading")]
     [Tooltip("Full scene paths in gameplay order. Every entry must also be enabled in Build Settings.")]
-    public string[] levelScenePaths = { "Assets/Scenes/Level 1.unity", "Assets/Scenes/Level 2.unity", "Assets/Scenes/Level 3.unity" };
+    public string[] levelScenePaths = { "Assets/Scenes/Feature Sandbox/Level 1.unity", "Assets/Scenes/Feature Sandbox/Level 2.unity", "Assets/Scenes/Feature Sandbox/Level 3.unity" };
 
     [Header("Run State")]
     [Tooltip("Current score for this game run. Reset when starting a fresh run.")]
@@ -74,7 +74,21 @@ public class GameController : MonoBehaviour
         if (transitionInProgress || !currentContentScene.IsValid() || !currentContentScene.isLoaded)
             return false;
 
-        StartCoroutine(RestartCurrentLevelRoutine(currentContentScene.path));
+        PlayerController player = persistentPlayer != null ? persistentPlayer : FindFirstObjectByType<PlayerController>();
+        LevelSpawnPoint spawnPoint = FindNearestSpawnPoint(currentContentScene, player != null ? player.transform.position : Vector3.zero);
+        if (player == null || spawnPoint == null)
+        {
+            Debug.LogWarning($"Cannot restart '{currentContentScene.path}' because it needs a Player and at least one {nameof(LevelSpawnPoint)}.");
+            return false;
+        }
+
+        player.ResetToSpawn(spawnPoint.transform.position);
+        player.GetComponent<PlayerHealth>()?.RestoreFullHealth();
+
+        if (spawnPoint.connectMainCameraToPlayer)
+            ConnectSceneCameraToPlayer(currentContentScene, player.transform, spawnPoint.cameraOffset);
+
+        BindHudToPlayer(player);
         return true;
     }
 
@@ -243,31 +257,6 @@ public class GameController : MonoBehaviour
         LoadSceneByPath(MainMenuScenePath, null, false);
     }
 
-    private IEnumerator RestartCurrentLevelRoutine(string scenePath)
-    {
-        transitionInProgress = true;
-        ClearPendingSpawn();
-
-        if (persistentPlayer != null)
-        {
-            Destroy(persistentPlayer.gameObject);
-            persistentPlayer = null;
-            yield return null;
-        }
-
-        SetSceneCamerasEnabled(currentContentScene, false);
-        AsyncOperation unloadOperation = SceneManager.UnloadSceneAsync(currentContentScene);
-        if (unloadOperation != null)
-        {
-            while (!unloadOperation.isDone)
-                yield return null;
-        }
-
-        currentContentScene = default;
-        transitionInProgress = false;
-        LoadSceneByPath(scenePath, null, false);
-    }
-
     private void PlacePlayerAtPendingSpawn(Scene loadedScene)
     {
         if (loadedScene.path != pendingScenePath)
@@ -320,6 +309,27 @@ public class GameController : MonoBehaviour
             ConnectSceneCameraToPlayer(loadedScene, player.transform, spawnPoint.cameraOffset);
 
         BindHudToPlayer(player);
+    }
+
+    private static LevelSpawnPoint FindNearestSpawnPoint(Scene scene, Vector3 position)
+    {
+        LevelSpawnPoint nearestSpawnPoint = null;
+        float nearestDistanceSquared = float.MaxValue;
+
+        foreach (LevelSpawnPoint spawnPoint in FindObjectsByType<LevelSpawnPoint>(FindObjectsSortMode.None))
+        {
+            if (spawnPoint.gameObject.scene != scene)
+                continue;
+
+            float distanceSquared = (spawnPoint.transform.position - position).sqrMagnitude;
+            if (distanceSquared < nearestDistanceSquared)
+            {
+                nearestSpawnPoint = spawnPoint;
+                nearestDistanceSquared = distanceSquared;
+            }
+        }
+
+        return nearestSpawnPoint;
     }
 
     private void BindHudToPlayer(PlayerController player)

@@ -9,9 +9,9 @@ public class MainMenuUI : MonoBehaviour
     [Tooltip("Text displayed as the main menu title.")]
     public string gameTitle = "Dragon Adventure";
     [Tooltip("Full Build Settings scene path loaded by the Play button.")]
-    public string playScenePath = "Assets/Scenes/PlayersHouse.unity";
+    public string playScenePath = "Assets/Scenes/Chapter 1/PlayersHouse.unity";
     [Tooltip("Full Build Settings scene path loaded by the Playtest button.")]
-    public string playtestScenePath = "Assets/Scenes/Level 1.unity";
+    public string playtestScenePath = "Assets/Scenes/Feature Sandbox/Level 1.unity";
 
     private void Awake()
     {

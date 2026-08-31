@@ -10,17 +10,21 @@ A simple fixed-plane 2D follow camera:
 - Uses `Vector3.SmoothDamp` for gentle lag/smoothing behind the target during gameplay.
 - Snaps immediately to its target when the scene starts and when `GameController` assigns a player after a level change.
 - Has a scripted `0.05` second no-smoothing arrival window after level transitions, then restores normal smoothing.
+- Can clamp the full camera viewport to a rectangle set by scene markers, preventing the view from revealing space outside the authored map.
 
 ## Fields
 - `target` — the Transform to follow (set to `Player`).
 - `offset` — a `Vector2` offset from the target (e.g. to frame slightly ahead/above).
 - `smoothTime` — smoothing responsiveness (lower = snappier, higher = laggier/smoother).
+- `useCornerMarkers` — uses a `Bottom Left` and `Top Right` `CameraBoundsCorner` pair in the same scene to clamp both camera axes. Marker bounds take priority over numeric vertical limits.
 - `useVerticalLimits` — enables/disables vertical clamping.
 - `topLimit` — highest Y position the camera center can move to.
 - `bottomLimit` — lowest Y position the camera center can move to.
 
 ## Scene Setup
 Attached to `Main Camera`. Camera itself is typically Orthographic for a clean 2D look, positioned at some negative Z (e.g. `-10`) so it looks toward the play plane at `Z = 0`.
+
+To define map bounds, drag two instances of `CameraBoundsCorner.prefab` into the scene. Set one instance to `Bottom Left` and place it at the map's lower-left playable edge; set the other to `Top Right` and place it at the upper-right edge. The small orange markers are editor-only and hide during gameplay. The camera accounts for its viewport size, so it stops before any part of the screen can pan outside that rectangle.
 
 Keep the camera scene-owned rather than making it a Player-prefab child. Content-scene cameras start disabled and `GameController` enables only the destination camera after it reconnects to the persistent Player. The only active `AudioListener` lives in `Persistent.unity` with the music service.
 

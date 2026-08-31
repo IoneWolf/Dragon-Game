@@ -11,6 +11,16 @@ The project went through two different tile/ground systems. The **current, activ
 - `Composite Collider 2D` (merges every individual tile's box collider into one continuous seamless shape — critical for preventing the player/enemy from snagging on tiny seams between adjacent tile colliders)
 - `Rigidbody2D` set to **Static** (required for `Composite Collider 2D` to function)
 
+World TileMaps render on the `Default` sorting layer. Characters use the higher `Characters` sorting layer so they always render in front of ground and platform tiles.
+
+### One-way platforms
+`PlayersHouse` also has a `One Way Platforms` TileMap child. It uses `OneWayPlatformTilemap`, a static `Rigidbody2D`, a `TilemapCollider2D`, and a `PlatformEffector2D` so tiles are solid when landing from above but can be passed through from below.
+
+- Paint `PlatformDarkGray.asset` onto `One Way Platforms`, not the solid `TileMap`.
+- The platform TileMap uses the `OneWayPlatform` physics layer; do not use that layer for normal ground.
+- While standing on a one-way platform, hold Ctrl or double-tap `S` to drop through it. The player detects the contacted platform collider and briefly ignores that specific collider, then collides with ground beneath it as normal.
+- `PlayerController.dropThroughDuration` and `doubleTapDownWindow` tune the drop-through duration and double-tap timing.
+
 ### `GrayTileGenerator.cs` (`Assets/Scripts/Tiles/Editor/`)
 An editor menu tool: **Tools → Dragon Adventure → Generate Gray Tile Asset**. Since there's no real tile art yet, this procedurally creates:
 - A small gray `Texture2D`, saved as `Assets/Tiles/GrayTileTexture.png`, imported as a Sprite.

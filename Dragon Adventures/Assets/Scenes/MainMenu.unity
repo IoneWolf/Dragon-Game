@@ -149,8 +149,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameTitle: Dragon Adventure
-  playScenePath: Assets/Scenes/PlayersHouse.unity
-  playtestScenePath: Assets/Scenes/Level 1.unity
+  playScenePath: Assets/Scenes/Chapter 1/PlayersHouse.unity
+  playtestScenePath: Assets/Scenes/Feature Sandbox/Level 1.unity
 --- !u!4 &538316154
 Transform:
   m_ObjectHideFlags: 0

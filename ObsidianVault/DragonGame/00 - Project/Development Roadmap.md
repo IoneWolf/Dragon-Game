@@ -12,13 +12,16 @@ Focused on development order, not a full feature wishlist. See [[NEXT]] for the 
 - Level ground via Unity Tilemap (Composite Collider, zero-friction physics material) — see [[Grid and Tilemapping]]
 - Interact-to-talk: nearest-interactable detection + a reusable dialogue box, with a talking rock as the first example — see [[Interaction System]] and [[Dialogue System]]
 - Placeholder NPC with editable dialogue data — see [[NPC]]
-- Interact-to-proceed level exits with named spawn points — see [[Level Transitions]]
+- Proximity-triggered level exits with directional scripted walks and named spawn points — see [[Level Transitions]]
+- One-way platform tiles with crouch/double-`S` drop-through — see [[Grid and Tilemapping]]
+- Camera bounds defined by drag-and-drop corner markers — see [[Camera]]
 
 ## In Progress
 - Nothing currently marked in progress — see [[NEXT]] once a task is set.
 
 ## Planned Later
-- Replace placeholder square sprites with real player/enemy/tile art — see [[Asset Requirements]]
+- Expand the player animation set beyond the current two-frame idle loop — see [[Player]]
+- Replace placeholder enemy and tile art — see [[Asset Requirements]]
 - Replace placeholder NPC sprite/dialogue with real content — see [[Asset Requirements]]
 - Add final background music tracks — see [[Asset Requirements]]
 - Add transition polish such as fades/loading screens — see [[Level Transitions]]

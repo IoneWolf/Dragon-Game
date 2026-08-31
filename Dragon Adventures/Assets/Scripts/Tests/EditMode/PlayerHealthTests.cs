@@ -56,4 +56,17 @@ public class PlayerHealthTests
         Assert.AreEqual(0, health.CurrentHP,
             $"[{nameof(PlayerHealthTests)}] Scripts/Player/PlayerHealth.cs: HP should clamp at 0, not go negative.");
     }
+
+    [Test]
+    public void RestoreFullHealth_AfterDefeat_RestoresMaximumHP()
+    {
+        health.TakeDamage(100);
+
+        health.RestoreFullHealth();
+
+        Assert.AreEqual(health.maxHP, health.CurrentHP,
+            $"[{nameof(PlayerHealthTests)}] Scripts/Player/PlayerHealth.cs: RestoreFullHealth should restore maximum HP.");
+        Assert.IsFalse(health.IsInvulnerable,
+            $"[{nameof(PlayerHealthTests)}] Scripts/Player/PlayerHealth.cs: RestoreFullHealth should clear invulnerability.");
+    }
 }

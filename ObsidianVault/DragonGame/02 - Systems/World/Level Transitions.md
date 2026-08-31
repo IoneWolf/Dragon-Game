@@ -55,6 +55,7 @@ For a new Level 4, add it after Level 3 in `levelScenePaths` and Build Settings.
 - Removes any Player instantiated by the destination scene, then moves the retained player to the matched spawn and clears its velocity.
 - Temporarily disables input on the retained player during additive loading and disables it on the destination's temporary player before removal. This prevents two `PlayerInput` components from competing to pair the same device.
 - Rejects requests to additively load a scene that is already loaded, preventing duplicate global 2D lights and scene objects.
+- Restarts keep the current Player object and reset it to the nearest `LevelSpawnPoint` in the active scene, rather than unloading and rebuilding the current level.
 - A missing spawn ID produces a warning instead of silently using the Player prefab position.
 
 ## Level Authoring Checklist
@@ -62,10 +63,11 @@ For a new Level 4, add it after Level 3 in `levelScenePaths` and Build Settings.
 1. Add the scene to Build Settings.
 2. Add its full path to `Persistent`'s `GameController.levelScenePaths` list in travel order.
 3. Add one scene-owned `Main Camera`, with no active `AudioListener`.
-4. Do not add HUD, music, or `GameController` objects to the level; `Persistent.unity` owns those systems.
-5. Drag in `LevelSpawnPoint.prefab` for each possible entrance and assign unique direction-appropriate IDs.
-6. Add `LevelExit` instances for each possible departure, configure their mode and destination spawn ID, and size their trigger area for the desired proximity.
-7. Test forward and reverse travel by starting from Persistent. Confirm the player arrives at the marker, the health HUD remains visible, only one Player and one active camera exist, music continues, and the Console has no missing-spawn or audio-listener warnings.
+4. Add one scene-owned Global Light 2D for URP lit sprites; only one gameplay content scene is active after a transition.
+5. Do not add HUD, music, or `GameController` objects to the level; `Persistent.unity` owns those systems.
+6. Drag in `LevelSpawnPoint.prefab` for each possible entrance and assign unique direction-appropriate IDs.
+7. Add `LevelExit` instances for each possible departure, configure their mode and destination spawn ID, and size their trigger area for the desired proximity.
+8. Test forward and reverse travel by starting from Persistent. Confirm the player arrives at the marker, the health HUD remains visible, only one Player, active camera, and global light exist, music continues, and the Console has no missing-spawn or audio-listener warnings.
 
 ## Current Limits
 

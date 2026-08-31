@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerController : MonoBehaviour
 {
+    private const string OneWayPlatformLayerName = "OneWayPlatform";
+
     [Header("Movement")]
     [Tooltip("Base horizontal movement speed in world units per second.")]
     public float moveSpeed = 5f;
@@ -46,6 +48,12 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Small upward offset applied when respawning so the player does not reappear slightly inside the ground.")]
     public float respawnYOffset = 0.25f;
 
+    [Header("One-Way Platforms")]
+    [Tooltip("Seconds to ignore one-way platforms after crouching or double-tapping S while standing on one.")]
+    public float dropThroughDuration = 0.35f;
+    [Tooltip("Maximum seconds allowed between S presses for a double-tap drop-through.")]
+    public float doubleTapDownWindow = 0.25f;
+
     private Rigidbody2D rb;
     private Collider2D ownCollider;
     private PlayerInputHandler input;
@@ -58,7 +66,13 @@ public class PlayerController : MonoBehaviour
     private bool scriptedMovementActive;
     private float scriptedMovementDirection;
     private float scriptedMovementSpeed;
+    private int oneWayPlatformLayer;
+    private float lastDownPressedTime = -10f;
+    private float dropThroughEndTime;
+    private bool crouchWasHeld;
     private readonly Collider2D[] groundCheckResults = new Collider2D[8];
+    private readonly Collider2D[] platformContactResults = new Collider2D[8];
+    private Collider2D ignoredPlatformCollider;
 
     private void Awake()
     {
@@ -66,11 +80,14 @@ public class PlayerController : MonoBehaviour
         ownCollider = GetComponent<Collider2D>();
         input = GetComponent<PlayerInputHandler>();
         visual = GetComponentInChildren<PlayerSpriteVisual>();
+        oneWayPlatformLayer = LayerMask.NameToLayer(OneWayPlatformLayerName);
         lastGroundedPosition = rb.position;
     }
 
     private void Update()
     {
+        UpdateDropThrough();
+
         if (Keyboard.current != null &&
             (Keyboard.current.leftShiftKey.wasReleasedThisFrame || Keyboard.current.rightShiftKey.wasReleasedThisFrame))
         {
@@ -85,6 +102,18 @@ public class PlayerController : MonoBehaviour
 
         if (visual != null)
             visual.SetCrouching(input.CrouchHeld);
+
+        if (input.CrouchHeld && !crouchWasHeld)
+            TryStartDropThrough();
+        crouchWasHeld = input.CrouchHeld;
+
+        if (Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame)
+        {
+            if (Time.time - lastDownPressedTime <= doubleTapDownWindow)
+                TryStartDropThrough();
+
+            lastDownPressedTime = Time.time;
+        }
 
         if (DialogueUI.IsOpen) return;
 
@@ -148,6 +177,68 @@ public class PlayerController : MonoBehaviour
     public void StopScriptedMovement()
     {
         scriptedMovementActive = false;
+    }
+
+    public void ResetToSpawn(Vector2 spawnPosition)
+    {
+        rb.position = spawnPosition;
+        rb.linearVelocity = Vector2.zero;
+        lastGroundedPosition = spawnPosition;
+        lastGroundedTime = Time.time;
+        lastPositionX = spawnPosition.x;
+        snagTimer = 0f;
+        StopScriptedMovement();
+    }
+
+    private void TryStartDropThrough()
+    {
+        Collider2D platformCollider = GetTouchedPlatformCollider();
+        if (platformCollider == null)
+            return;
+
+        Physics2D.IgnoreCollision(ownCollider, platformCollider, true);
+        ignoredPlatformCollider = platformCollider;
+        dropThroughEndTime = Time.time + dropThroughDuration;
+    }
+
+    private void UpdateDropThrough()
+    {
+        if (dropThroughEndTime <= 0f || Time.time < dropThroughEndTime)
+            return;
+
+        if (ignoredPlatformCollider != null)
+            Physics2D.IgnoreCollision(ownCollider, ignoredPlatformCollider, false);
+
+        ignoredPlatformCollider = null;
+        dropThroughEndTime = 0f;
+    }
+
+    private void OnDisable()
+    {
+        if (ownCollider != null && ignoredPlatformCollider != null)
+            Physics2D.IgnoreCollision(ownCollider, ignoredPlatformCollider, false);
+    }
+
+    private Collider2D GetTouchedPlatformCollider()
+    {
+        if (oneWayPlatformLayer < 0 || ownCollider == null)
+            return null;
+
+        ContactFilter2D platformFilter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            layerMask = 1 << oneWayPlatformLayer,
+            useTriggers = false
+        };
+        int contactCount = ownCollider.GetContacts(platformFilter, platformContactResults);
+
+        for (int index = 0; index < contactCount; index++)
+        {
+            if (platformContactResults[index] != null)
+                return platformContactResults[index];
+        }
+
+        return null;
     }
 
     public void RespawnAtLastGroundedPosition()

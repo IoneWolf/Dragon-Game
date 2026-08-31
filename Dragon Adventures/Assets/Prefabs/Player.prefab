@@ -108,6 +108,8 @@ MonoBehaviour:
   fallRespawnY: -10
   respawnXOffset: 1
   respawnYOffset: 0.25
+  dropThroughDuration: 0.35
+  doubleTapDownWindow: 0.25
 --- !u!114 &4244871740092522567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,10 +272,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 109028993
+  m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 4202496048006343336, guid: 5d669200a75f877469f680391c694aa8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -281,7 +283,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &7615011584488076454
@@ -297,4 +299,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteColor: {r: 0, g: 0, b: 1, a: 1}
-  size: 1
+  size: 2
+  idleFramesPerSecond: 3

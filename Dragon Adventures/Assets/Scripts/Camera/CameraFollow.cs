@@ -14,6 +14,10 @@ public class CameraFollow : MonoBehaviour
     [Tooltip("Seconds the camera takes to catch up. Use 0 for an instant snap.")]
     public float smoothTime = 0.15f;
 
+    [Header("Corner Markers")]
+    [Tooltip("Clamp the camera to Camera Bounds Corner markers placed in this scene. Requires one Bottom Left and one Top Right marker.")]
+    public bool useCornerMarkers = true;
+
     [Header("Vertical Limits")]
     [Tooltip("Clamp the camera's vertical position between Bottom Limit and Top Limit.")]
     public bool useVerticalLimits;
@@ -25,14 +29,19 @@ public class CameraFollow : MonoBehaviour
     private Vector3 velocity;
     private float fixedZ;
     private Coroutine smoothingRestoreRoutine;
+    private Camera sceneCamera;
+    private CameraBoundsCorner bottomLeftMarker;
+    private CameraBoundsCorner topRightMarker;
 
     private void Awake()
     {
         fixedZ = transform.position.z;
+        sceneCamera = GetComponent<Camera>();
     }
 
     private void Start()
     {
+        FindCornerMarkers();
         SnapToTarget();
     }
 
@@ -70,10 +79,64 @@ public class CameraFollow : MonoBehaviour
 
     private Vector3 GetTargetPosition()
     {
+        float desiredX = target.position.x + offset.x;
         float desiredY = target.position.y + offset.y;
-        if (useVerticalLimits)
-            desiredY = Mathf.Clamp(desiredY, bottomLimit, topLimit);
 
-        return new Vector3(target.position.x + offset.x, desiredY, fixedZ);
+        if (useCornerMarkers && TryGetMarkerBounds(out Bounds markerBounds))
+        {
+            float halfHeight = sceneCamera != null && sceneCamera.orthographic ? sceneCamera.orthographicSize : 0f;
+            float halfWidth = halfHeight * (sceneCamera != null ? sceneCamera.aspect : 1f);
+            desiredX = ClampCameraCenter(desiredX, markerBounds.min.x, markerBounds.max.x, halfWidth);
+            desiredY = ClampCameraCenter(desiredY, markerBounds.min.y, markerBounds.max.y, halfHeight);
+        }
+        else if (useVerticalLimits)
+        {
+            desiredY = Mathf.Clamp(desiredY, bottomLimit, topLimit);
+        }
+
+        return new Vector3(desiredX, desiredY, fixedZ);
+    }
+
+    private bool TryGetMarkerBounds(out Bounds markerBounds)
+    {
+        if (bottomLeftMarker == null || topRightMarker == null)
+            FindCornerMarkers();
+
+        if (bottomLeftMarker == null || topRightMarker == null)
+        {
+            markerBounds = default;
+            return false;
+        }
+
+        Vector3 minimum = Vector3.Min(bottomLeftMarker.transform.position, topRightMarker.transform.position);
+        Vector3 maximum = Vector3.Max(bottomLeftMarker.transform.position, topRightMarker.transform.position);
+        markerBounds = new Bounds((minimum + maximum) * 0.5f, maximum - minimum);
+        return true;
+    }
+
+    private void FindCornerMarkers()
+    {
+        bottomLeftMarker = null;
+        topRightMarker = null;
+
+        foreach (CameraBoundsCorner marker in FindObjectsByType<CameraBoundsCorner>(FindObjectsSortMode.None))
+        {
+            if (marker.gameObject.scene != gameObject.scene)
+                continue;
+
+            if (marker.cornerType == CameraBoundsCornerType.BottomLeft)
+                bottomLeftMarker = marker;
+            else if (marker.cornerType == CameraBoundsCornerType.TopRight)
+                topRightMarker = marker;
+        }
+    }
+
+    private static float ClampCameraCenter(float desired, float minimum, float maximum, float halfViewportSize)
+    {
+        float minimumCenter = minimum + halfViewportSize;
+        float maximumCenter = maximum - halfViewportSize;
+        return minimumCenter > maximumCenter
+            ? (minimum + maximum) * 0.5f
+            : Mathf.Clamp(desired, minimumCenter, maximumCenter);
     }
 }

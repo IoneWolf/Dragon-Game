@@ -56,6 +56,15 @@ public class PlayerHealth : MonoBehaviour
         return true;
     }
 
+    public void RestoreFullHealth()
+    {
+        StopAllCoroutines();
+        CurrentHP = maxHP;
+        IsInvulnerable = false;
+        visual?.SetVisible(true);
+        OnHealthChanged?.Invoke(CurrentHP, maxHP);
+    }
+
     private IEnumerator InvulnerabilityRoutine()
     {
         IsInvulnerable = true;
