@@ -51,7 +51,13 @@ public class PlayerInteractor : MonoBehaviour
 
     private Collider2D FindClosestInteractableCollider()
     {
-        int count = Physics2D.OverlapCircleNonAlloc(transform.position, interactRadius, results, interactableLayerMask);
+        ContactFilter2D interactableFilter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            layerMask = interactableLayerMask,
+            useTriggers = Physics2D.queriesHitTriggers
+        };
+        int count = Physics2D.OverlapCircle(transform.position, interactRadius, interactableFilter, results);
         Collider2D closest = null;
         float closestSqrDistance = float.MaxValue;
 

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,21 +9,34 @@ public enum LevelExitMode
     ExplicitSceneName
 }
 
-// Interactable scene exit: press Interact near it to load another scene and request a spawn point.
+// Proximity-based scene exit that walks the player into the transition before loading.
 [AddComponentMenu("Dragon Adventure/Level/Level Exit")]
-[RequireComponent(typeof(InteractionPromptIcon))]
-public class LevelExit : MonoBehaviour, IInteractable
+public class LevelExit : MonoBehaviour
 {
     public LevelExitMode exitMode = LevelExitMode.NextLevel;
     public string targetSceneName = "Level 1";
     public string targetSpawnId = "Default";
-    public string promptText = "Press E to proceed";
     public bool keepPlayerBetweenScenes = true;
+
+    [Header("Transition Walk")]
+    public float walkDirection = 1f;
+    public float walkSpeed = 1.5f;
+    public float walkDuration = 0.6f;
+
+    private bool transitionStarted;
 
     private void Awake()
     {
-        GetComponent<InteractionPromptIcon>().SetPromptText(promptText);
         EnsureTriggerCollider();
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (transitionStarted) return;
+
+        PlayerController player = other.GetComponentInParent<PlayerController>();
+        if (player != null)
+            StartCoroutine(TransitionRoutine(player));
     }
 
     private void EnsureTriggerCollider()
@@ -39,13 +53,19 @@ public class LevelExit : MonoBehaviour, IInteractable
         box.size = Vector2.one;
     }
 
-    public void Interact()
+    private IEnumerator TransitionRoutine(PlayerController player)
     {
+        transitionStarted = true;
+        player.StartScriptedMovement(GetWalkDirection(), walkSpeed);
+        yield return new WaitForSeconds(walkDuration);
+        player.StopScriptedMovement();
+
         GameController controller = GameController.Instance;
         if (controller == null)
         {
             Debug.LogWarning($"{nameof(LevelExit)} on {name} needs a GameController in the scene.");
-            return;
+            transitionStarted = false;
+            yield break;
         }
 
         bool loadStarted = exitMode == LevelExitMode.ExplicitSceneName
@@ -55,11 +75,17 @@ public class LevelExit : MonoBehaviour, IInteractable
         if (!loadStarted)
         {
             Debug.LogWarning($"{nameof(LevelExit)} on {name} could not resolve a target scene.");
+            transitionStarted = false;
         }
     }
 
     private int GetLevelOffset()
     {
         return exitMode == LevelExitMode.NextLevel ? 1 : -1;
+    }
+
+    private float GetWalkDirection()
+    {
+        return exitMode == LevelExitMode.PreviousLevel ? -1f : walkDirection;
     }
 }

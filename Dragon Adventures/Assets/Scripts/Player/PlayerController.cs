@@ -48,6 +48,9 @@ public class PlayerController : MonoBehaviour
     private float lastMoveDirection = 1f;
     private float snagTimer;
     private float lastPositionX;
+    private bool scriptedMovementActive;
+    private float scriptedMovementDirection;
+    private float scriptedMovementSpeed;
     private readonly Collider2D[] groundCheckResults = new Collider2D[8];
 
     private void Awake()
@@ -79,7 +82,7 @@ public class PlayerController : MonoBehaviour
         if (DialogueUI.IsOpen) return;
 
         // Visual-only, so it updates every rendered frame instead of only on physics steps.
-        float horizontal = input.MoveInput.x;
+        float horizontal = scriptedMovementActive ? scriptedMovementDirection : input.MoveInput.x;
         if (visual != null && Mathf.Abs(horizontal) > 0.01f)
             visual.SetFacing(horizontal);
     }
@@ -101,8 +104,8 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        float horizontal = input.MoveInput.x;
-        float speed = moveSpeed * (input.SprintHeld ? sprintMultiplier : 1f);
+        float horizontal = scriptedMovementActive ? scriptedMovementDirection : input.MoveInput.x;
+        float speed = scriptedMovementActive ? scriptedMovementSpeed : moveSpeed * (input.SprintHeld ? sprintMultiplier : 1f);
         if (Mathf.Abs(horizontal) > 0.1f)
             lastMoveDirection = Mathf.Sign(horizontal);
 
@@ -114,7 +117,7 @@ public class PlayerController : MonoBehaviour
 
         Vector2 velocity = rb.linearVelocity;
 
-        if (CanJump(Time.time, lastGroundedTime, input.LastJumpPressedTime, coyoteTime, jumpBufferTime))
+        if (!scriptedMovementActive && CanJump(Time.time, lastGroundedTime, input.LastJumpPressedTime, coyoteTime, jumpBufferTime))
         {
             float gravity = Physics2D.gravity.y * rb.gravityScale;
             velocity.y = CalculateJumpVelocity(jumpHeight, gravity);
@@ -126,6 +129,18 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = velocity;
 
         HandleSnag(horizontal);
+    }
+
+    public void StartScriptedMovement(float direction, float speed)
+    {
+        scriptedMovementActive = true;
+        scriptedMovementDirection = Mathf.Sign(direction);
+        scriptedMovementSpeed = speed;
+    }
+
+    public void StopScriptedMovement()
+    {
+        scriptedMovementActive = false;
     }
 
     public void RespawnAtLastGroundedPosition()
@@ -166,7 +181,13 @@ public class PlayerController : MonoBehaviour
     private bool IsGrounded()
     {
         Vector2 origin = groundCheck != null ? (Vector2)groundCheck.position : ComputeFallbackFeetPosition();
-        int count = Physics2D.OverlapCircleNonAlloc(origin, groundCheckRadius, groundCheckResults, groundLayerMask);
+        ContactFilter2D groundFilter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            layerMask = groundLayerMask,
+            useTriggers = Physics2D.queriesHitTriggers
+        };
+        int count = Physics2D.OverlapCircle(origin, groundCheckRadius, groundFilter, groundCheckResults);
 
         for (int i = 0; i < count; i++)
         {

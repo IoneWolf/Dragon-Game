@@ -7,6 +7,7 @@ Interactable non-player character system for simple conversations. The current N
 - The NPC appears as a yellow square placeholder in both Edit mode and Play mode.
 - When the player enters interaction range, `PlayerInteractor` can show the NPC's `InteractionPromptIcon` prompt.
 - Pressing Interact calls `NPCInteractable.Interact()` through the existing `IInteractable` interface.
+- `NPCInteractable` raises `OnInteracted` before opening dialogue; `ObjectiveTracker` uses this for the starting yellow-NPC objective.
 - `NPCInteractable` opens `DialogueUI` with an opening line and a list of choices from `NPCDialogueData`.
 - Selecting a normal choice shows that option's response text, with buttons to go `Back` to the opening choices or say `Goodbye.`.
 - Selecting a choice marked `closesDialogue` closes the dialogue immediately.

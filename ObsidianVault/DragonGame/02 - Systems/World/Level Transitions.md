@@ -1,6 +1,6 @@
 # Level Transitions
 
-Interact with a `LevelExit` using `E` to move between levels. `GameController` loads the destination asynchronously, keeps the player alive, then places that same player at the requested `LevelSpawnPoint`.
+Enter a `LevelExit` trigger to move between levels. The player is briefly walked into the exit, then `GameController` loads the destination asynchronously, keeps the player alive, and places that same player at the requested `LevelSpawnPoint`.
 
 ## Level Chain
 
@@ -32,12 +32,13 @@ For a new Level 4, add it after Level 3 in `levelScenePaths` and Build Settings.
 
 ### `LevelExit.cs` (`Assets/Scripts/Level/`)
 
-- Put this on the door, edge, or portal the player interacts with.
-- Requires `InteractionPromptIcon` and supplies a trigger `BoxCollider2D` when absent.
+- Put this on the door, edge, or portal the player enters.
+- Supplies a trigger `BoxCollider2D` when absent. Entering its trigger starts the transition automatically.
 - `NextLevel` and `PreviousLevel` follow the ordered `levelScenePaths` list.
 - `ExplicitSceneName` uses `targetSceneName` when the route is not part of the linear chain.
 - Set `targetSpawnId` to the ID on the destination `LevelSpawnPoint`.
 - Keep `keepPlayerBetweenScenes` enabled for normal gameplay.
+- `NextLevel` exits walk right and `PreviousLevel` exits walk left; the player sprite faces the scripted movement direction. `walkDirection`, `walkSpeed`, and `walkDuration` configure the pre-load walk for `ExplicitSceneName` exits, whose default is rightward at `1.5` units per second for `0.6` seconds.
 
 ### `LevelSpawnPoint.cs` (`Assets/Scripts/Level/`)
 
@@ -61,7 +62,7 @@ For a new Level 4, add it after Level 3 in `levelScenePaths` and Build Settings.
 3. Add one scene-owned `Main Camera`, with no active `AudioListener`.
 4. Do not add HUD, music, or `GameController` objects to the level; `Persistent.unity` owns those systems.
 5. Drag in `LevelSpawnPoint.prefab` for each possible entrance and assign unique direction-appropriate IDs.
-6. Add `LevelExit` instances for each possible departure and configure their mode and destination spawn ID.
+6. Add `LevelExit` instances for each possible departure, configure their mode and destination spawn ID, and size their trigger area for the desired proximity.
 7. Test forward and reverse travel by starting from Persistent. Confirm the player arrives at the marker, the health HUD remains visible, only one Player and one active camera exist, music continues, and the Console has no missing-spawn or audio-listener warnings.
 
 ## Current Limits

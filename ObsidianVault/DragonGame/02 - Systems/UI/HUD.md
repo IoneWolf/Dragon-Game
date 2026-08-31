@@ -21,7 +21,7 @@ A full-screen "GAME OVER" overlay with a Restart button.
 - Starts hidden (`SetActive(false)`); shown when `PlayerHealth.OnPlayerDefeated` fires.
 - `GameController` calls `SetTarget(PlayerHealth)` after Level 1 loads and after every level transition, so the persistent overlay always listens to the retained player.
 - Sets `Time.timeScale = 0` while shown, pausing all gameplay (movement/physics use scaled time, so everything freezes correctly).
-- **Restart** button calls `SceneManager.LoadScene(currentSceneIndex)` and resets `Time.timeScale = 1`.
+- **Restart** button resets `Time.timeScale`, then calls `GameController.RestartCurrentLevel()`. The controller removes the defeated persistent player, unloads the active content scene, and loads a fresh copy so health and the HUD reset correctly.
 - Auto-creates an `EventSystem` (using `InputSystemUIInputModule`, matching the project's Input System setup) if one doesn't already exist in the scene — without this, UI buttons silently do nothing when clicked, which was an actual bug encountered during setup.
 
 **Setup:** keep one `GameOverUI` on the Persistent `HUD` GameObject. Leave **Target** empty; `GameController` assigns it at runtime. Do not add game-over overlays to individual level scenes.

@@ -43,7 +43,10 @@ public class PlayerSpriteVisual : MonoBehaviour
     {
         if (spriteRenderer.sprite == null)
             spriteRenderer.sprite = SquareSpriteFactory.CreateSquareSprite(spriteColor);
+
+        float crouchScale = isCrouching ? 0.5f : 1f;
         transform.localScale = new Vector3(size, isCrouching ? size * 0.5f : size, size);
+        transform.localPosition = Vector3.down * (size * (1f - crouchScale) * 0.5f);
     }
 
     // Called by PlayerController with the horizontal input axis.

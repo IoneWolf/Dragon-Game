@@ -9,13 +9,12 @@ Obsidian vault for the Dragon Adventures Unity 2D project.
 - [[Ideas]] — speculative ideas not yet committed to
 
 ## Systems
-- [[Player]]
-- [[Enemy]]
-- [[Camera]]
-- [[Grid and Tilemapping]]
-- [[HUD]]
-- [[Interaction System]]
-- [[Dialogue System]]
+- [Systems index](02%20-%20Systems/README.md)
+- **Core:** [[Game Controller]], [[Music]], [[Objectives]]
+- **Characters:** [[Player]], [[Enemy]], [[NPC]]
+- **World:** [[Camera]], [[Grid and Tilemapping]], [[Hazards]], [[Level Transitions]]
+- **Interaction:** [[Interaction System]], [[Dialogue System]]
+- **UI:** [[HUD]]
 
 ## Other
 - [[Asset Requirements]] — placeholder art still needed

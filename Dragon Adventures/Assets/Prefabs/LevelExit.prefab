@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4524787109647826212}
-  - component: {fileID: 3561074721399835433}
   - component: {fileID: 2245499365712509210}
   - component: {fileID: 3326488468857230101}
   - component: {fileID: 7256815200625775798}
@@ -35,22 +34,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3561074721399835433
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5524755666397536108}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38297dbe21a22b042931002251541332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  promptText: Press E
-  offset: {x: 0, y: 1, z: 0}
-  textColor: {r: 1, g: 1, b: 1, a: 1}
-  fontSize: 24
 --- !u!114 &2245499365712509210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,6 +51,9 @@ MonoBehaviour:
   targetSpawnId: FromLeft
   promptText: Press E to proceed
   keepPlayerBetweenScenes: 1
+  walkDirection: 1
+  walkSpeed: 1.5
+  walkDuration: 0.6
 --- !u!61 &3326488468857230101
 BoxCollider2D:
   m_ObjectHideFlags: 0
