@@ -9,7 +9,9 @@ using UnityEditor;
 [RequireComponent(typeof(SpriteRenderer))]
 public class NPCVisual : MonoBehaviour
 {
+    [Tooltip("Color used when generating the placeholder NPC sprite.")]
     public Color spriteColor = Color.yellow;
+    [Tooltip("Width and height of the placeholder NPC sprite in world units.")]
     public float size = 1f;
 
     private SpriteRenderer spriteRenderer;

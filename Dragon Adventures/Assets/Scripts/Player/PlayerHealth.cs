@@ -5,8 +5,11 @@ using UnityEngine;
 // Tracks player HP, applies damage with an invulnerability window, and notifies listeners (UI, feedback).
 public class PlayerHealth : MonoBehaviour
 {
+    [Tooltip("Hit points restored when the player object is created.")]
     public int maxHP = 3;
+    [Tooltip("Seconds after taking damage during which further damage is ignored.")]
     public float invulnerabilityDuration = 1.5f;
+    [Tooltip("Seconds between visibility toggles during the invulnerability flicker.")]
     public float invulnerabilityFlickerInterval = 0.1f;
 
     public int CurrentHP { get; private set; }

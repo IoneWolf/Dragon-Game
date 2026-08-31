@@ -4,8 +4,11 @@ using UnityEngine.UI;
 // Builds a simple screen-space HP bar and colors it green/yellow/red based on remaining HP percentage.
 public class HealthBarUI : MonoBehaviour
 {
+    [Tooltip("Player health component whose HP this bar displays.")]
     public PlayerHealth target;
+    [Tooltip("Width and height of the health bar in screen pixels.")]
     public Vector2 barSize = new Vector2(200f, 24f);
+    [Tooltip("Pixel offset from the top-left corner of the screen.")]
     public Vector2 screenOffset = new Vector2(20f, -20f);
 
     private Image fillImage;

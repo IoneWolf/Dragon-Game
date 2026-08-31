@@ -6,8 +6,12 @@ using UnityEngine.UI;
 // Builds a simple title/Play/Quit main menu entirely in code, same approach as HealthBarUI/GameOverUI.
 public class MainMenuUI : MonoBehaviour
 {
+    [Tooltip("Text displayed as the main menu title.")]
     public string gameTitle = "Dragon Adventure";
-    public string gameplaySceneName = "SampleScene";
+    [Tooltip("Full Build Settings scene path loaded by the Play button.")]
+    public string playScenePath = "Assets/Scenes/PlayersHouse.unity";
+    [Tooltip("Full Build Settings scene path loaded by the Playtest button.")]
+    public string playtestScenePath = "Assets/Scenes/Level 1.unity";
 
     private void Awake()
     {
@@ -33,7 +37,8 @@ public class MainMenuUI : MonoBehaviour
 
         BuildTitle(canvas.transform);
         BuildButton(canvas.transform, "Play", new Vector2(0.5f, 0.45f), PlayGame);
-        BuildButton(canvas.transform, "Quit", new Vector2(0.5f, 0.3f), QuitGame);
+        BuildButton(canvas.transform, "Playtest", new Vector2(0.5f, 0.3f), Playtest);
+        BuildButton(canvas.transform, "Quit", new Vector2(0.5f, 0.15f), QuitGame);
     }
 
     private void BuildTitle(Transform parent)
@@ -104,7 +109,19 @@ public class MainMenuUI : MonoBehaviour
             return;
         }
 
-        controller.StartGame();
+        controller.LoadSceneByPath(playScenePath, null, false);
+    }
+
+    public void Playtest()
+    {
+        GameController controller = GameController.Instance;
+        if (controller == null)
+        {
+            Debug.LogWarning("Main Menu needs a persistent GameController to start a playtest.");
+            return;
+        }
+
+        controller.LoadSceneByPath(playtestScenePath, null, false);
     }
 
     public void QuitGame()

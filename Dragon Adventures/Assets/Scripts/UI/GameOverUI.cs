@@ -6,7 +6,9 @@ using UnityEngine.UI;
 // Shows a "GAME OVER" overlay with a Restart button when the player's HP reaches 0.
 public class GameOverUI : MonoBehaviour
 {
+    [Tooltip("Player health component that triggers this overlay when its HP reaches zero.")]
     public PlayerHealth target;
+    [Tooltip("Color and transparency of the full-screen game-over overlay.")]
     public Color overlayColor = new Color(0f, 0f, 0f, 0.75f);
 
     private GameObject panel;

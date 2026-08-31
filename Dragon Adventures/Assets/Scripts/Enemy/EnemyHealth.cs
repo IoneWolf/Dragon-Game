@@ -4,6 +4,7 @@ using UnityEngine;
 // Tracks enemy HP; destroys the enemy once HP reaches 0 (e.g. from being stomped).
 public class EnemyHealth : MonoBehaviour
 {
+    [Tooltip("Hit points restored when this enemy object is created.")]
     public int maxHP = 1;
     public int CurrentHP { get; private set; }
 

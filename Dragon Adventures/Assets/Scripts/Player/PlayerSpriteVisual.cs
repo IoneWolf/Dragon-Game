@@ -9,7 +9,9 @@ using UnityEditor;
 [RequireComponent(typeof(SpriteRenderer))]
 public class PlayerSpriteVisual : MonoBehaviour
 {
+    [Tooltip("Color used when generating the placeholder player sprite.")]
     public Color spriteColor = Color.blue;
+    [Tooltip("Full standing width and height of the placeholder sprite in world units.")]
     public float size = 1f;
 
     private SpriteRenderer spriteRenderer;

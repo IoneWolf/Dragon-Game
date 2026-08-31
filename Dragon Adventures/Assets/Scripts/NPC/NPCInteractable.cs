@@ -7,6 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof(InteractionPromptIcon))]
 public class NPCInteractable : MonoBehaviour, IInteractable
 {
+    [Tooltip("Dialogue asset displayed when the player interacts with this NPC. Leave empty to use the built-in greeting.")]
     public NPCDialogueData dialogueData;
 
     public event Action OnInteracted;

@@ -11,8 +11,11 @@ public class ObjectiveTracker : MonoBehaviour
     private static readonly Vector2 ExpandedPanelSize = new Vector2(990f, 360f);
     private static readonly Vector2 CollapsedPanelSize = new Vector2(990f, 126f);
 
+    [Tooltip("Text shown for the objective completed when the tracked enemy is defeated.")]
     public string defeatObjectiveText = "Defeat the red square";
+    [Tooltip("Text shown for the objective completed when the tracked NPC is spoken to.")]
     public string talkObjectiveText = "Talk to the yellow NPC";
+    [Tooltip("Pixel offset from the top-left corner of the screen.")]
     public Vector2 screenOffset = new Vector2(20f, -60f);
 
     private EnemyHealth trackedEnemy;

@@ -13,14 +13,21 @@ public enum LevelExitMode
 [AddComponentMenu("Dragon Adventure/Level/Level Exit")]
 public class LevelExit : MonoBehaviour
 {
+    [Tooltip("How to choose the destination scene: next/previous entry in GameController, or an explicit scene name.")]
     public LevelExitMode exitMode = LevelExitMode.NextLevel;
+    [Tooltip("Destination scene name for Explicit Scene Name mode. It must match an entry in GameController's level list.")]
     public string targetSceneName = "Level 1";
+    [Tooltip("Spawn ID on the destination LevelSpawnPoint where the player should appear.")]
     public string targetSpawnId = "Default";
+    [Tooltip("Keep the current Player object and move it to the destination scene's spawn point.")]
     public bool keepPlayerBetweenScenes = true;
 
     [Header("Transition Walk")]
+    [Tooltip("Horizontal walk direction for Explicit Scene Name exits: positive is right, negative is left. Ignored by next/previous exits.")]
     public float walkDirection = 1f;
+    [Tooltip("Forced walking speed in world units per second before the destination scene loads.")]
     public float walkSpeed = 1.5f;
+    [Tooltip("Seconds the player walks into the exit before the destination scene starts loading.")]
     public float walkDuration = 0.6f;
 
     private bool transitionStarted;

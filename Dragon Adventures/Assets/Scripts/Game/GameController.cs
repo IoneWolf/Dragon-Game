@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 [DefaultExecutionOrder(-100)]
@@ -24,9 +25,11 @@ public class GameController : MonoBehaviour
     }
 
     [Header("Scene Loading")]
+    [Tooltip("Full scene paths in gameplay order. Every entry must also be enabled in Build Settings.")]
     public string[] levelScenePaths = { "Assets/Scenes/Level 1.unity", "Assets/Scenes/Level 2.unity", "Assets/Scenes/Level 3.unity" };
 
     [Header("Run State")]
+    [Tooltip("Current score for this game run. Reset when starting a fresh run.")]
     public int score;
 
     public bool HasPendingSpawn => !string.IsNullOrWhiteSpace(pendingSpawnId);
@@ -145,6 +148,13 @@ public class GameController : MonoBehaviour
             return false;
         }
 
+        Scene targetScene = SceneManager.GetSceneByPath(scenePath);
+        if (targetScene.IsValid() && targetScene.isLoaded)
+        {
+            Debug.LogWarning($"Cannot load '{scenePath}' because it is already loaded.");
+            return false;
+        }
+
         StartCoroutine(LoadSceneRoutine(scenePath, spawnId, keepPlayerBetweenScenes));
         return true;
     }
@@ -179,7 +189,10 @@ public class GameController : MonoBehaviour
 
         Scene previousContentScene = currentContentScene;
         if (keepPlayerBetweenScenes)
+        {
             KeepPlayerBetweenScenes();
+            SetPlayerInputEnabled(persistentPlayer, false);
+        }
 
         if (previousContentScene.IsValid() && previousContentScene.isLoaded)
             SetSceneCamerasEnabled(previousContentScene, false);
@@ -205,6 +218,9 @@ public class GameController : MonoBehaviour
             PlacePlayerAtPendingSpawn(loadedScene);
         else
             BindHudToPlayer(FindFirstObjectByType<PlayerController>());
+
+        if (keepPlayerBetweenScenes)
+            SetPlayerInputEnabled(persistentPlayer, true);
 
         SetSceneCamerasEnabled(loadedScene, true);
 
@@ -354,7 +370,10 @@ public class GameController : MonoBehaviour
         foreach (PlayerController player in FindObjectsByType<PlayerController>(FindObjectsSortMode.None))
         {
             if (player != persistentPlayer && player.gameObject.scene == destinationScene)
+            {
+                SetPlayerInputEnabled(player, false);
                 Destroy(player.gameObject);
+            }
         }
     }
 
@@ -363,5 +382,14 @@ public class GameController : MonoBehaviour
         persistentPlayer = FindFirstObjectByType<PlayerController>();
         if (persistentPlayer != null)
             DontDestroyOnLoad(persistentPlayer.gameObject);
+    }
+
+    private static void SetPlayerInputEnabled(PlayerController player, bool enabled)
+    {
+        if (player == null) return;
+
+        PlayerInput playerInput = player.GetComponent<PlayerInput>();
+        if (playerInput != null)
+            playerInput.enabled = enabled;
     }
 }

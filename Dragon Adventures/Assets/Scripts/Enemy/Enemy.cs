@@ -9,7 +9,9 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyHealth))]
 public class Enemy : MonoBehaviour
 {
+    [Tooltip("Hit points removed from the player on a non-stomp contact.")]
     public int damage = 1;
+    [Tooltip("Minimum upward velocity applied to the player after stomping this enemy.")]
     public int stompBounceForce = 6;
 
     [Tooltip("Trigger collider used purely for damage/stomp detection. Auto-created if left empty.")]

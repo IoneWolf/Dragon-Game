@@ -7,10 +7,13 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
+    [Tooltip("Base horizontal movement speed in world units per second.")]
     public float moveSpeed = 5f;
+    [Tooltip("Multiplier applied to Move Speed while Sprint is held.")]
     public float sprintMultiplier = 2f;
 
     [Header("Jumping")]
+    [Tooltip("Desired jump height in world units. Launch speed is calculated from gravity.")]
     public float jumpHeight = 1.5f;
 
     [Header("Jump Assist")]
@@ -22,15 +25,19 @@ public class PlayerController : MonoBehaviour
     [Header("Ground Check")]
     [Tooltip("Empty child Transform positioned at the character's feet.")]
     public Transform groundCheck;
+    [Tooltip("Radius in world units for the ground overlap check.")]
     public float groundCheckRadius = 0.15f;
+    [Tooltip("Physics layers that count as ground for jumping and safe respawn positions.")]
     public LayerMask groundLayerMask = ~0;
 
     [Header("Anti-Snag")]
     [Tooltip("If grounded, trying to move, but not actually advancing this long, nudge upward to pop free of a tile seam.")]
     public float snagTimeThreshold = 0.1f;
+    [Tooltip("Upward distance in world units used to free the player from a tile seam.")]
     public float snagNudgeAmount = 0.05f;
 
     [Header("Fall Respawn")]
+    [Tooltip("Respawn the player after falling below Fall Respawn Y.")]
     public bool useFallRespawn = true;
     [Tooltip("If the player's Y position drops below this value, they respawn at the last grounded position.")]
     public float fallRespawnY = -10f;

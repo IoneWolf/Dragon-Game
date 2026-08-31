@@ -53,6 +53,8 @@ For a new Level 4, add it after Level 3 in `levelScenePaths` and Build Settings.
 - Uses `SceneManager.LoadSceneAsync` with `LoadSceneMode.Additive`, then unloads the previous content scene after the destination is ready.
 - Keeps the traveling Player using `DontDestroyOnLoad`.
 - Removes any Player instantiated by the destination scene, then moves the retained player to the matched spawn and clears its velocity.
+- Temporarily disables input on the retained player during additive loading and disables it on the destination's temporary player before removal. This prevents two `PlayerInput` components from competing to pair the same device.
+- Rejects requests to additively load a scene that is already loaded, preventing duplicate global 2D lights and scene objects.
 - A missing spawn ID produces a warning instead of silently using the Player prefab position.
 
 ## Level Authoring Checklist

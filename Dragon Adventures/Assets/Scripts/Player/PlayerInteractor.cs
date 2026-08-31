@@ -5,7 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerInteractor : MonoBehaviour
 {
+    [Tooltip("Maximum world-space distance for finding an interactable when the Interact input is pressed.")]
     public float interactRadius = 1.5f;
+    [Tooltip("Physics layers searched for interactable colliders.")]
     public LayerMask interactableLayerMask = ~0;
 
     private PlayerInputHandler input;

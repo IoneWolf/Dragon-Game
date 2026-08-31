@@ -12,14 +12,19 @@ public class GameMusicPlayer : MonoBehaviour
     public static GameMusicPlayer Instance { get; private set; }
 
     [Header("Startup Music")]
+    [Tooltip("Music clip played when this component starts. Leave empty to load a clip from Resources/Music.")]
     public AudioClip startupMusic;
     [Tooltip("If Startup Music is empty, play the first AudioClip found in Assets/Resources/Music.")]
     public bool loadFirstResourcesClip = true;
+    [Tooltip("Play the startup music automatically when the scene starts.")]
     public bool playOnStart = true;
 
     [Header("Playback")]
+    [Tooltip("Music volume from 0 (silent) to 1 (full volume).")]
     [Range(0f, 1f)] public float volume = 0.6f;
+    [Tooltip("Repeat the current music clip when it reaches the end.")]
     public bool loop = true;
+    [Tooltip("Keep this music player alive while changing scenes.")]
     public bool persistBetweenScenes = true;
 
     private AudioSource audioSource;

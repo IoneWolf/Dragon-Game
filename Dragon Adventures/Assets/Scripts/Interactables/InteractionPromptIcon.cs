@@ -4,9 +4,13 @@ using UnityEngine;
 // Reusable across any IInteractable - shown/hidden by PlayerInteractor via IInteractionPrompt.
 public class InteractionPromptIcon : MonoBehaviour, IInteractionPrompt
 {
+    [Tooltip("Text shown while the player is close enough to interact.")]
     public string promptText = "Press E";
+    [Tooltip("Local-space position of the prompt relative to this interactable.")]
     public Vector3 offset = new Vector3(0f, 1f, 0f);
+    [Tooltip("Color of the floating prompt text.")]
     public Color textColor = Color.white;
+    [Tooltip("Font size used by the floating prompt text.")]
     public int fontSize = 24;
 
     private GameObject promptObject;

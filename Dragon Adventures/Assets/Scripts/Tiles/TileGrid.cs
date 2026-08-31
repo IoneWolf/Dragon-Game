@@ -5,11 +5,15 @@ using UnityEngine;
 public class TileGrid : MonoBehaviour
 {
     [Header("Grid Size")]
+    [Tooltip("Number of tile cells along the local X axis.")]
     public int width = 8;
+    [Tooltip("Number of tile cells along the local Y axis.")]
     public int height = 8;
+    [Tooltip("Width and height of each tile cell in world units.")]
     public float cellSize = 1f;
 
     [Header("Tile Look")]
+    [Tooltip("Color used for generated legacy grid tiles.")]
     public Color tileColor = Color.gray;
 
     // Flattened width*height map; true = a ground tile exists at that cell.

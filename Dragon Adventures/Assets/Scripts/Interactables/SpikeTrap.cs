@@ -5,7 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(PolygonCollider2D))]
 public class SpikeTrap : MonoBehaviour
 {
+    [Tooltip("Hit points removed when the player touches this trap.")]
     public int damage = 1;
+    [Tooltip("Color of the generated spike sprite.")]
     public Color spikeColor = new Color(0.85f, 0.85f, 0.9f, 1f);
 
     private void Awake()

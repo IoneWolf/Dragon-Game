@@ -9,7 +9,9 @@ using UnityEditor;
 [RequireComponent(typeof(SpriteRenderer))]
 public class RockVisual : MonoBehaviour
 {
+    [Tooltip("Color used when generating the placeholder rock sprite.")]
     public Color rockColor = Color.black;
+    [Tooltip("Width and height of the placeholder rock sprite in world units.")]
     public float size = 1f;
 
     private SpriteRenderer spriteRenderer;

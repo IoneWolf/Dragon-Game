@@ -217,7 +217,7 @@ MonoBehaviour:
   startupMusic: {fileID: 0}
   loadFirstResourcesClip: 1
   playOnStart: 1
-  volume: 0.087
+  volume: 0.007
   loop: 1
   persistBetweenScenes: 0
 --- !u!81 &2003
@@ -241,7 +241,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.087
+  m_Volume: 0.007
   m_Pitch: 1
   Loop: 1
   Mute: 0

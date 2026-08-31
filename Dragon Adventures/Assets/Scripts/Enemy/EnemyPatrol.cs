@@ -6,13 +6,17 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyPatrol : MonoBehaviour
 {
+    [Tooltip("Horizontal patrol speed in world units per second.")]
     public float moveSpeed = 2f;
+    [Tooltip("Extra world-space distance in front of the collider used to detect a wall.")]
     public float wallCheckDistance = 0.2f;
+    [Tooltip("Physics layers treated as walls by the patrol check. The Player layer is excluded at runtime.")]
     public LayerMask obstacleLayerMask = ~0;
 
     [Header("Anti-Snag")]
     [Tooltip("If trying to move but not actually advancing this long, nudge upward to pop free of a tile seam.")]
     public float snagTimeThreshold = 0.1f;
+    [Tooltip("Upward distance in world units used to free the enemy from a tile seam.")]
     public float snagNudgeAmount = 0.05f;
 
     // 1 = moving right (+X), -1 = moving left (-X).

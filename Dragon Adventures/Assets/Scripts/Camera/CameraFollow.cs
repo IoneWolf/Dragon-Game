@@ -5,15 +5,21 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     [Header("Target")]
+    [Tooltip("Transform for the camera to follow. Usually the Player transform.")]
     public Transform target;
+    [Tooltip("World-space X/Y distance from the target used to frame the camera.")]
     public Vector2 offset = Vector2.zero;
 
     [Header("Smoothing")]
+    [Tooltip("Seconds the camera takes to catch up. Use 0 for an instant snap.")]
     public float smoothTime = 0.15f;
 
     [Header("Vertical Limits")]
+    [Tooltip("Clamp the camera's vertical position between Bottom Limit and Top Limit.")]
     public bool useVerticalLimits;
+    [Tooltip("Highest allowed world Y position for the camera when vertical limits are enabled.")]
     public float topLimit = 10f;
+    [Tooltip("Lowest allowed world Y position for the camera when vertical limits are enabled.")]
     public float bottomLimit = -10f;
 
     private Vector3 velocity;
